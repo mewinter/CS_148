@@ -1,0 +1,1 @@
+SELECT * FROM tblCourses WHERE fldCourseName LIKE "Database Design for the Web"

@@ -1,0 +1,117 @@
+/* 
+    Created on : September 9, 2015, 10:27:26 AM
+    Author     : Meaghan Winter
+*/
+@import url('reset.css');
+/*------------------------   standard elements  ----------------------------- */
+body{
+    margin: 0 5% 0 5%;
+    background-color: #74D87E;
+}
+article{
+    padding: 2em;
+}
+figcaption {
+    color: #839e99;
+    font-style: italic;
+    text-align: center;
+}
+
+header{
+    overflow: auto; /* forces header to fit to figure */
+}
+
+header .float_left{
+    margin-top: 0;
+}
+
+header h1{
+    padding-bottom: 2em;
+    padding-top: 75px;
+}
+
+img{
+    max-width: 100%; /* image strinks to fit containor but does not stretch */
+}
+
+section{
+    padding: 2em;
+    width: 40%;  
+}
+
+/*------------------------   classes           ------------------------------ */
+.float_left {
+    border: thin solid darkslategray;
+    float: left;
+    margin: 1em 1em 1em 0;
+    padding: 0.5em;
+}
+
+.even{
+    background-color: whitesmoke;
+}
+
+.odd{
+    background-color: lightcyan;
+}
+
+.small {
+    width: 150px;
+}
+
+/*------------------------   nav section only  ------------------------------ */
+nav ol li{
+    display: inline-block;
+    list-style-type: none;
+    padding-right: 2em;
+    padding-left: 2em;
+}
+
+/*------------------------   table page  only  ------------------------------ */
+#table aside{
+    height: 600px; 
+    float: left; 
+    overflow: auto; 
+    margin-left: 2em;            
+}
+#table section{
+    width: 35%; 
+    height: 600px; 
+    float: left; 
+    overflow: auto;
+}
+#table table{
+    border: medium #000080 solid;
+    border-collapse: collapse;
+}
+
+#table td {
+    border: thin #000080 solid;
+    border-collapse: collapse;
+}
+
+#table th{
+    text-align: left;
+}
+
+            table{
+                border: medium #000080 solid;
+                border-collapse: collapse;
+                width: 90%;
+                margin: auto;
+                max-width: 600px;
+            }
+            tbody{height: 10em;
+                  overflow: auto;}
+            td, th {
+                border: thin #000080 solid;
+                border-collapse: collapse;
+            }
+
+            tr:nth-child(even) {
+                background-color: lightcyan;
+            }
+
+            tr:nth-child(odd){
+                background-color: whitesmoke;
+            }
