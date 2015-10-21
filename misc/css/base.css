@@ -6,19 +6,37 @@
 /*------------------------   standard elements  ----------------------------- */
 body{
     margin: 0 5% 0 5%;
-    background-color: #74D87E;
+    /*background-color: #74D87E; */
+    background: #f5f5f5;
+    font-family: sans-serif;
 }
+
 article{
     padding: 2em;
+    background:beige;
+    background-color: #426139;
 }
 figcaption {
     color: #839e99;
     font-style: italic;
     text-align: center;
 }
+h1 {
+    font-size: 2.5em; /* 40px/16=2.5em */
+}
+
+h2 {
+    font-size: 1.875em; /* 30px/16=1.875em */
+}
 
 header{
     overflow: auto; /* forces header to fit to figure */
+    background-color: #92bd3f;
+    margin-bottom: 2em;
+    margin-top: 1em;
+    padding: 1em;
+    text-align: left;
+    overflow: hidden;
 }
 
 header .float_left{
@@ -28,6 +46,7 @@ header .float_left{
 header h1{
     padding-bottom: 2em;
     padding-top: 75px;
+
 }
 
 img{
@@ -41,8 +60,14 @@ section{
 
 /*------------------------   classes           ------------------------------ */
 .float_left {
-    border: thin solid darkslategray;
     float: left;
+    margin: 1em;
+    padding: 0.5em;
+    height: 100px;
+}
+
+.float_center {
+    float: inherit;
     margin: 1em 1em 1em 0;
     padding: 0.5em;
 }
@@ -68,6 +93,7 @@ nav ol li{
 }
 
 /*------------------------   table page  only  ------------------------------ */
+
 #table aside{
     height: 600px; 
     float: left; 
@@ -83,6 +109,7 @@ nav ol li{
 #table table{
     border: medium #000080 solid;
     border-collapse: collapse;
+    margin: 1em;
 }
 
 #table td {
@@ -94,24 +121,28 @@ nav ol li{
     text-align: left;
 }
 
-            table{
-                border: medium #000080 solid;
-                border-collapse: collapse;
-                width: 90%;
-                margin: auto;
-                max-width: 600px;
-            }
-            tbody{height: 10em;
-                  overflow: auto;}
-            td, th {
-                border: thin #000080 solid;
-                border-collapse: collapse;
-            }
+table{
+    border: medium #000080 solid;
+    border-collapse: collapse;
+    width: 90%;
+    margin-bottom: 1em;
+    margin: auto;
+    max-width: 600px;
+}
+tbody{height: 10em;
+      overflow: auto;}
+td, th {
+    border: thin #000080 solid;
+    border-collapse: collapse;
+}
 
-            tr:nth-child(even) {
-                background-color: lightcyan;
-            }
+tr:nth-child(even) {
+    background-color: lightcyan;
+}
 
-            tr:nth-child(odd){
-                background-color: whitesmoke;
-            }
+tr:nth-child(odd){
+    background-color: whitesmoke;
+}
+tr:hover {
+    background-color: #ffff99;
+}
