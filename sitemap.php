@@ -27,7 +27,8 @@ and open the template in the editor.
         <article>
             
             <h2>Advising</h2>
-            <ul><li><a href="advising/index.php">Index.php</a></li></ul>
+            <ul><li><a href="advising/index.php">Index.php</a></li>
+                <li><a href="advising/tables.php">Tables.php</a></li></ul>
 
             <h2> Assignment 3.0 SQL Join</h2>
             <ol><li><a href="assignment3.0/join.php">Join.php</a></li>

@@ -49,6 +49,7 @@ function securityCheck($path_parts, $yourURL, $form = false) {
     $whiteListFolders[] = "/cs148develop/assignment1.0";
     $whiteListFolders[] = "/cs148develop/assignment2.0";
     $whiteListFolders[] = "/cs148develop/assignment3.0";
+    $whiteListFolders[]= '/cs148develop/advising';
 
     // Check for valid page name
     if (!in_array($path_parts['basename'], $whiteListPages)) {
