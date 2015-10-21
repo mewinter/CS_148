@@ -25,6 +25,9 @@ and open the template in the editor.
             <p><a href="tryme.php/">Tryme</a></p></header>
 
         <article>
+            
+            <h2>Advising</h2>
+            <ul><li><a href="advising/index.php">Index.php</a></li></ul>
 
             <h2> Assignment 3.0 SQL Join</h2>
             <ol><li><a href="assignment3.0/join.php">Join.php</a></li>
@@ -38,8 +41,8 @@ and open the template in the editor.
                     <li><a href="assignment3.0/q08.php">q08</a></li></ul>
             </ol>
 
-            <h2>Friday Assignment 10/2/15</h2>
-            <a href ="misc/friday.php">Friday 10/2/15</a>
+            <h2>Friday Assignment </h2>
+            <a href ="misc/friday.php">Friday</a>
 
             <h2> Assignment 2.0 SELECT</h2>
             <ol><li><a href="assignment2.0/select.php">Select.php</a></li>
