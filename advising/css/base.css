@@ -97,14 +97,14 @@ nav ol li{
 #table aside{
     height: 600px; 
     float: left; 
-    overflow: auto; 
+    overflow: scroll; 
     margin-left: 2em;            
 }
 #table section{
     width: 35%; 
     height: 600px; 
     float: left; 
-    overflow: auto;
+    overflow: scroll;
 }
 #table table{
     border: medium #000080 solid;

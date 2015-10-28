@@ -6,10 +6,20 @@
  * and open the template in the editor.
  */
 
-include "top.php";
+include "top.php"; 
+?>
+
+<article>
+
+<h1>Advising</h1>
+
+<ul><li><a href="tables.php">Tables.php</a></li>
+                <li><a href="schema.pdf">Schema</a></li>
+                <li><a href="erd.pdf">Entity Relationship Diagram</a></li></ul>
+
+</article>
 
 
-print'<h1>Index Page</h1>';
-
+<?php
 include "footer.php";
 ?>

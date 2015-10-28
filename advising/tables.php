@@ -122,9 +122,8 @@ if ($tableName != "") {
     }
 
     // all done
-    print '</table>';
+    print '</table></article>';
     print '</aside>';
 }
-print '</article>';
 include "footer.php";
 ?>
