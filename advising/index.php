@@ -15,7 +15,8 @@ include "top.php";
 
 <ul><li><a href="tables.php">Tables.php</a></li>
                 <li><a href="schema.pdf">Schema</a></li>
-                <li><a href="erd.pdf">Entity Relationship Diagram</a></li></ul>
+                <li><a href="erd.pdf">Entity Relationship Diagram</a></li>
+<li><a href="plan.php">Plan.php</a></li></ul>
 
 </article>
 
