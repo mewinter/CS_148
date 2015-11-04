@@ -8,18 +8,15 @@
 
 include "top.php";
 
-
 //now print out each record
 //$columns = 10;
 $query = 'SELECT `pmkPlanId`, `fnkStudentNetId`,`fldDateCreated`, `fnkAdvisorNetId`, `pmkYear`, `pmkTerm`, `fldRequirement`,`fldDepartment`, `fldCourseNumber`, `fldCourseName` FROM tblFourYearPlan JOIN tblSemesterPlan on pmkPlanId = tblSemesterPlan.fnkPlanId JOIN tblSemesterPlanCourses ON tblSemesterPlanCourses.fnkPlanId=tblFourYearPlan.pmkPlanId AND tblSemesterPlanCourses.fnkYear = pmkYear AND tblSemesterPlanCourses.fnkTerm = tblSemesterPlan.pmkTerm JOIN tblCourses on pmkCourseId= fnkCourseId WHERE pmkPlanId=1 ORDER BY tblSemesterPlan.fldDisplayOrder, tblSemesterPlanCourses.fldDisplayOrder';
 $info2 = $thisDatabaseReader->select($query, "", 1, 3, 0, 0, false, false);
 $highlight = 0; // used to highlight alternate rows
-//print '<article><p><b>Total Records: ' . count($info2) . '</b></p>';
-//print '<p><b>SQL: ' . $query . '</b></p></article>';
 
-$TotalCreditsSem = 0;
-$TotalCredits = 0;
-$Semester = 0;
+$TotalCreditsSem;
+$TotalCredits;
+$Semester = '';
 
 print '<ol><div>';
 
@@ -28,16 +25,15 @@ foreach ($info2 as $row) {
     //check for new term
     print '</ol></div>';
     print"<div><h3>";
-    if ($Semester == 0) {
+    if ($Semester != $row['pmkTerm']) {
         print $row["pmkTerm"] . ' ' . $row["pmkYear"];
         print"</h3>";
-        $Semester = 1;
+        $TotalCredits += $row["fldCredits"];
+        $TotalCreditsSem += $row["fldCredits"];
+        print 'total credits: ' . $TotalCredits . ' total semester credits: ' . $TotalCreditsSem;
+        print '<ol><li>' . $row['fldDepartment'] . ' ' . $row ['fldCourseNumber'] . ' ' . $row['fldCredits'] . '</li>';
     }
-    $TotalCredits = $TotalCredits + $row["fldCredits"];
-    $TotalCreditsSem = $TotalCreditsSem + $row["fldCredits"];
-    print 'total credits: '. $TotalCredits . ' total semester credits: '. $TotalCreditsSem;
-    print '<ol><li>' . $row['fldDepartment'] . ' ' . $row ['fldCourseNumber'] . ' '. $row['fldCredits'] . '</li>';
-    $Semester = 0;
+    //$Semester = 0;
 }
 
 //print '<p><table><th>Courses</th>';
@@ -53,7 +49,7 @@ $labels = array_filter($fields, "is_string");
 
 $columns = count($labels);
 print '<table><article>';
-print '<tr><th colspan="' . $columns . '">' .'</th></tr>';
+print '<tr><th colspan="' . $columns . '">' . '</th></tr>';
 // print out the column headings, note i always use a 3 letter prefix
 // and camel case like pmkCustomerId and fldFirstName
 print '<tr>';
@@ -70,7 +66,7 @@ print '</tr>';
 foreach ($info2 as $record) {
     print '<tr>';
     for ($i = 0; $i < $columns; $i++) {
-        print '<td>'. $record[$i] . '</td>';
+        print '<td>' . $record[$i] . '</td>';
     }
     print '</tr>';
 }
