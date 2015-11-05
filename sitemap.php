@@ -30,6 +30,8 @@ and open the template in the editor.
             <ul><li><a href="advising/index.php">Index.php</a></li>
                 <li><a href="advising/tables.php">Tables.php</a></li>
                 <li><a href="advising/plan.php">Plan.php</a></li>
+                <li><a href="advising/tableplan.php">TablePlan.php</a></li>
+                <li><a href="advising/CreatePlan.php">CreatePlan.php</a></li>
                 <li><a href="advising/schema.pdf">Schema</a></li>
                 <li><a href="advising/erd.pdf">Entity Relationship Diagram</a></li></ul>
 

@@ -9,7 +9,7 @@
 include "top.php";
 
 //now print out each record
-//$columns = 10;
+
 $query = 'SELECT `pmkPlanId`,`fldDateCreated`, `fldCatalogYear`, `fnkAdvisorNetId` , `fnkStudentNetId`,'
         . '`pmkYear`, `pmkTerm`, `fldRequirement`,'
         . '`fldDepartment`, `fldCourseNumber`, '
@@ -28,14 +28,16 @@ $query = 'SELECT `pmkPlanId`,`fldDateCreated`, `fldCatalogYear`, `fnkAdvisorNetI
         . 'ORDER BY tblSemesterPlan.fldDisplayOrder, tblSemesterPlanCourses.fldDisplayOrder';
 
 $info2 = $thisDatabaseReader->select($query, "", 1, 3, 0, 0, false, false);
+
 $highlight = 0; // used to highlight alternate rows
 
 $SemesterCredits =0;
 $TotalCredits =0;
-$Semester = '';
+$semester = '';
 
 foreach ($info2 as $row) {
     if ($semester != $row['pmkTerm'] . $row ['pmkYear']) {
+        
         if ($semester != ''){
             print '</ol>';
             print "<p> Total Credits: " . $SemesterCredits;
@@ -45,6 +47,7 @@ foreach ($info2 as $row) {
         if ($semester != '' AND ( $row['pmkTerm'] == 'Fall')){
             echo "</div>". LINE_BREAK;
         }
+        
         if ($row['pmkTerm']== 'Fall'){
             print "<div class - 'academicYear clearFloats'>";
         }
@@ -79,40 +82,7 @@ foreach ($info2 as $row) {
 
 //print '<p><table><th>Courses</th>';
 
-print '<article><p><b>Total Records: ' . count($info2) . '</b></p>';
-print '<p><b>SQL: ' . $query . '</b></p>';
 
-// the array $records is both associative and indexed, column zero is associative
-// which you see in teh above print_r statement
-$fields = array_keys($info2[0]);
-$labels = array_filter($fields, "is_string");
-
-
-$columns = count($labels);
-print '<table><article>';
-print '<tr><th colspan="' . $columns . '">' . '</th></tr>';
-// print out the column headings, note i always use a 3 letter prefix
-// and camel case like pmkCustomerId and fldFirstName
-print '<tr>';
-foreach ($labels as $label) {
-    print '<th>';
-    $camelCase = preg_split('/(?=[A-Z])/', substr($label, 3));
-    foreach ($camelCase as $one) {
-        print $one . " ";
-    }
-    print '</th>';
-}
-print '</tr>';
-//now print out each record
-foreach ($info2 as $record) {
-    print '<tr>';
-    for ($i = 0; $i < $columns; $i++) {
-        print '<td>' . $record[$i] . '</td>';
-    }
-    print '</tr>';
-}
-// all done
-print '</table></article>';
 
 include "footer.php";
 ?>

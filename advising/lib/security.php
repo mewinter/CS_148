@@ -38,6 +38,8 @@ function securityCheck($path_parts, $yourURL, $form = false) {
     $whiteListPages[] = "join.php";
     $whiteListPages[] = 'advising.php';
     $whiteListPages[] = 'plan.php';
+    $whiteListPages[] = 'CreatePlan.php';
+    $whiteListPages[] = 'tableplan.php';
 
     //add all the folders to this array
     $whiteListFolders = array();
