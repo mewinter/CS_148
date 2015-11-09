@@ -86,7 +86,7 @@ section{
     float: left;
     margin: 1em;
     padding: 0.5em;
-    height: 100px;
+   // height: 100px;
 }
 
 .float_center {
