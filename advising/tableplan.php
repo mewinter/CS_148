@@ -43,7 +43,7 @@ foreach ($results as $row) {
 
     //get the fields and any information about them
     $query = 'SHOW COLUMNS FROM ' . $row[0];
-    $results2 = $thisDatabaseReader->select($query, "", 0, 0, 0, 0, false, false);
+    $results = $thisDatabaseReader->select($query, "", 0, 0, 0, 0, false, false);
 }    
 print '<article><p><b>Total Records: ' . count($info2) . '</b></p>';
 print '<p><b>SQL: ' . $query . '</b></p>';

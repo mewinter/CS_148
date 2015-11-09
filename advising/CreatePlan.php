@@ -1,5 +1,22 @@
 <?php
 include "top.php";
+
+/* ##### Step one
+*
+* create your database object using the appropriate database username
+*/
+
+//require_once('../bin/myDatabase.php');
+//
+//$dbUserName = get_current_user() . '_reader';
+//$whichPass = "r"; //flag for which one to use.
+//$dbName = strtoupper(get_current_user()) . '_UVM_Courses';
+//
+//$thisDatabase = new myDatabase($dbUserName, $whichPass, $dbName);
+//
+//
+
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
@@ -123,11 +140,88 @@ if (isset($_POST["btnSubmit"])) {
     //
     // SECTION: 2d Process Form - Passed Validation
     //
+// SECTION: 2d Process Form - Passed Validation
+    //
     // Process for when the form passes validation (the errorMsg array is empty)
     //
     if (!$errorMsg) {
         if ($debug)
             print "<p>Form is valid</p>";
+        //dddddddddddddddddddddd
+        //
+        // SECTION: 2e Save Data
+        //insert into tblplan
+        $sql = "INSERT INTO tblFourYearPlan(fldMajor, fldMinor, fldCatalogYear, fnkStudentId, fnkAdvisorId) VALUES (?, ?, ?, ?, ?)";
+        $data = array($major, $minor, $startYear, $studentNetId, $advisorNetId);
+        print "<p>SQL 1: " . $sql;
+        $plan = $thisDatabaseWriter->insert($sql, $data, 0, 0, 0, 0, false, false);
+        $planId = $thisDatabaseWriter->lastInsert();
+        // insert into semester plan
+
+        $sql = "INSERT INTO tblSemesterPlan(pmkYear, pmkTerm, fldDisplayOrder, fnkPlanId) VALUES ";
+        $semesterPlanData = array();
+        $term = 1;
+        $display = 1;
+        for ($i = $startYear; $i < $startYear + 4; $i++) {
+            if ($term != 1)
+                $sql .= ", ";
+
+// fall
+            $sql .= "(?, ?, ?, ?), ";
+            $semesterPlanData[] = $i;
+            if ($term % 2) {
+                $semesterPlanData[] = "Fall";
+            } else {
+                $semesterPlanData[] = "Spring";
+            }
+            $semesterPlanData[] = $display;
+            $semesterPlanData[] = $planId;
+            $term++;
+            $display++;
+// spring
+            $sql .= "(?, ?, ?, ?) ";
+            $semesterPlanData[] = $i + 1;
+            if ($term % 2) {
+                $semesterPlanData[] = "Fall";
+            } else {
+                $semesterPlanData[] = "Spring";
+            }
+            $semesterPlanData[] = $display;
+            $semesterPlanData[] = $planId;
+            $term++;
+            $display++;
+        }
+
+        print "<p>SQL 2: " . $sql;
+        print "<p>Data<pre>";
+        print_r($semesterPlanData);
+        print "</pre></p>";
+
+        $semesterPlan = $thisDatabaseWriter->insert($sql, $semesterPlanData, 0, 0, 0, 0, false, false);
+
+// insert into semester plan course pulling from default courses
+        // how doi set the year to be correct
+        //get year from plan
+        $defaultPlanYear = 2015;
+
+        $difference = $defaultPlanYear - $startYear;
+
+        if ($difference > 0) {
+            $difference = "-" . $difference;
+        } elseif ($difference < 0) {
+            $difference = "+" . ($difference * -1);
+        } else {
+            $difference = "";
+        }
+        $sql = "INSERT INTO tblSemesterPlanCourses(fnkPlanId, fnkYear, fnkTerm, fnkCourseId, fldDisplayOrder, fldRequirement) ";
+        $sql .= "SELECT " . $planId . " as fnkPlanId, (fnkYear" . $difference . ") as fnkYear, fnkTerm, fnkCourseId, fldDisplayOrder, fldRequirement FROM tblDefaultPlanCourses WHERE fnkDefaultPlanId=" . $defaultPlanId . " ORDER BY tblDefaultPlanCourses.fnkYear ASC, fnkTerm, fldDisplayOrder";
+        print "<p>SQL 3: " . $sql;
+        $planCourses = $thisDatabaseWriter->insert($sql, "", 1, 1, 0, 0, false, false);
+
+
+        die("<p>dig it: " . $planId . "</p>");
+    } // end valid form
+} // end defaul submit
         //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         //
         // SECTION: 2e Save Data
@@ -173,8 +267,7 @@ if (isset($_POST["btnSubmit"])) {
         $todaysDate = strftime("%x");
         $subject = "Four Year Plan: " . $todaysDate;
         $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
-    } // end form is valid
-} // ends if form was submitted.
+
 //#############################################################################
 //
 // SECTION 3 Display Form
@@ -307,26 +400,13 @@ if (isset($_POST["btnSubmit"])) {
                         <select id="txtDepartment" 
                                 name="txtDepartment" 
                                 tabindex="330" >
-                            <option <?php if ($Department == "unsure") print " selected "; ?>
-                                value="Unsure">Unsure</option>
+                            <option <?php if ($Department == "CS") print " selected "; ?>
+                                value="CS">CS</option>
 
-                            <option <?php if ($Department == "Rosh Hanahah") print " selected "; ?>
-                                value="Rosh Hashanah" 
-                                >Rosh Hashanah</option>
+                            <option <?php if ($Department == "BSAD") print " selected "; ?>
+                                value="BSAD" 
+                                >BSAD</option>
 
-                            <option <?php if ($festivals == "Yom Kippur") print " selected "; ?>
-                                value="Yom Kippur" >Yom Kippur</option>
-
-                            <option <?php if ($festivals == "Chanukah") print " selected "; ?>
-                                value="Chanukah" >Chanukah</option>
-                            <option <?php if ($festivals == "Purim") print " selected "; ?>
-                                value="Purim" >Purim</option>
-                            <option <?php if ($festivals == "Pesach") print " selected "; ?>
-                                value="Pesach" >Pesach</option>
-                            <option <?php if ($festivals == "Shabbat") print " selected "; ?>
-                                value="Shabbat" >Shabbat</option>
-                            <option <?php if ($festivals == "Not Listed") print " selected "; ?>
-                                value="Not Listed" >Not Listed</option>
                         </select>
                     </fieldset>     <!-- ends drop down list Department -->
                     
@@ -338,23 +418,16 @@ if (isset($_POST["btnSubmit"])) {
                             <option <?php if ($Course == "unsure") print " selected "; ?>
                                 value="Unsure">Unsure</option>
 
-                            <option <?php if ($Course == "Rosh Hanahah") print " selected "; ?>
-                                value="Rosh Hashanah" 
-                                >Rosh Hashanah</option>
+                            <option <?php if ($Course == "CS 008") print " selected "; ?>
+                                value="CS 008" 
+                                >CS 008</option>
 
-                            <option <?php if ($festivals == "Yom Kippur") print " selected "; ?>
-                                value="Yom Kippur" >Yom Kippur</option>
+                            <option <?php if ($festivals == "CS 21") print " selected "; ?>
+                                value="CS 21" >CS 21</option>
 
-                            <option <?php if ($festivals == "Chanukah") print " selected "; ?>
-                                value="Chanukah" >Chanukah</option>
-                            <option <?php if ($festivals == "Purim") print " selected "; ?>
-                                value="Purim" >Purim</option>
-                            <option <?php if ($festivals == "Pesach") print " selected "; ?>
-                                value="Pesach" >Pesach</option>
-                            <option <?php if ($festivals == "Shabbat") print " selected "; ?>
-                                value="Shabbat" >Shabbat</option>
-                            <option <?php if ($festivals == "Not Listed") print " selected "; ?>
-                                value="Not Listed" >Not Listed</option>
+                            <option <?php if ($festivals == "CS 148") print " selected "; ?>
+                                value="CS 148" >CS 148</option>
+
                         </select>
                     </fieldset>     <!-- ends drop down list -->
 

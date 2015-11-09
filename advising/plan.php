@@ -34,6 +34,16 @@ $highlight = 0; // used to highlight alternate rows
 $SemesterCredits =0;
 $TotalCredits =0;
 $semester = '';
+$Advisee = $row['fnkStudentNetId'];
+$Advisor = $row['fnkAdvisorNetId'];
+        
+?>
+
+<article>
+    <h1>Four Year Plan </h1>
+</article>
+    
+    <?php
 
 foreach ($info2 as $row) {
     if ($semester != $row['pmkTerm'] . $row ['pmkYear']) {
