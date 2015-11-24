@@ -16,10 +16,10 @@
             print '<li><a href="tables.php">Display Tables</a></li>';
         }
 
-        if ($path_parts['filename'] == "plan") {
-            print '<li class="activePage">View Plan</li>';
+        if ($path_parts['filename'] == 'Suggestions') {
+            print '<li class="activePage">Suggestions</li>';
         } else {
-            print '<li><a href="plan.php">View Plan</a></li>';
+            print '<li><a href="suggestions.php">Suggestions</a></li>';
         }
 
         if ($path_parts['filename'] == "CreatePlan") {

@@ -2,10 +2,10 @@
 
 <header>
     <figure class=float_left>
-        <img alt="The Universtiy of Vermont" src="images/uvmlogo.png">
+<!--        <img alt="The Universtiy of Vermont" src="images/uvmlogo.png">-->
     </figure>
     
-    <h1>UVM Advising</h1>
+    <h1>Movies</h1>
     
 </header>
 

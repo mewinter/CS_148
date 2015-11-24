@@ -5,11 +5,10 @@ require_once('lib/custom-functions.php');
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Advising</title>
+        <title>Movie Showings</title>
         <meta charset="utf-8">
         <meta name="author" content="Meaghan Winter">
-        <meta name="description" content="The guide to potential classes UVM 
-              Students can take and other important information">
+        <meta name="description" content="Movie Information and Showtimes">
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 

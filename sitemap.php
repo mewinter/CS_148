@@ -29,6 +29,7 @@ and open the template in the editor.
             <h2>Final Project</h2>
             <ul><li><a href="assignment10/index.php">Index.php</a></li>
                 <li><a href="assignment10/tables.php">Tables.php</a></li>
+                <li><a href="assignment10/suggestions.php">Suggestions.php</a></li>
             </ul>
 
             <h2>Advising</h2>
