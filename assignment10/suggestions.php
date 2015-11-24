@@ -26,6 +26,16 @@ $yourURL = $domain . $phpSelf;
 // in the order they appear on the form
 $firstName = "";
 $email = "youremail@uvm.edu";
+
+// Step Two: code can be in initialize variables or where step four needs to be
+$query = "SELECT fldMovieGenres";
+$query .= "FROM tblUserInfo ";
+
+// Step Three: code can be in initialize variables or where step four needs to be
+// $buildings is an associative array
+$genres = $thisDatabase->testquery($query, "", 0, 1, 0, 0, false, false);
+$genres = $thisDatabase->select($query, "", 0, 1, 0, 0, false, false);
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1d form error flags
@@ -34,6 +44,7 @@ $email = "youremail@uvm.edu";
 // in the order they appear in section 1c.
 $firstNameERROR = false;
 $emailERROR = false;
+$genresERROR = false;
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1e misc variables
@@ -42,7 +53,7 @@ $emailERROR = false;
 $errorMsg = array();
 // array used to hold form values that will be written to a CSV file
 $dataRecord = array();
-$mailed=false; // have we mailed the information to the user?
+$mailed = false; // have we mailed the information to the user?
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2 Process for when the form is submitted
@@ -57,7 +68,7 @@ if (isset($_POST["btnSubmit"])) {
         $msg.= "Security breach detected and reported</p>";
         die($msg);
     }
-    
+
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     //
     // SECTION: 2b Sanitize (clean) data 
@@ -145,9 +156,7 @@ if (isset($_POST["btnSubmit"])) {
         $todaysDate = strftime("%x");
         $subject = "Research Study: " . $todaysDate;
         $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
-        
     } // end form is valid
-    
 } // ends if form was submitted.
 //#############################################################################
 //
@@ -158,15 +167,15 @@ if (isset($_POST["btnSubmit"])) {
 <article id="main">
 
     <?php
-    //####################################
-    //
+//####################################
+//
     // SECTION 3a.
-    //
+//
     // 
-    // 
-    // 
-    // If its the first time coming to the form or there are errors we are going
-    // to display the form.
+// 
+// 
+// If its the first time coming to the form or there are errors we are going
+// to display the form.
     if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked with: end body submit
         print "<h1>Your Request has ";
         if (!$mailed) {
@@ -234,7 +243,7 @@ if (isset($_POST["btnSubmit"])) {
                                    onfocus="this.select()"
                                    autofocus>
                         </label>
-                        
+
                         <label for="txtEmail" class="required">Email
                             <input type="text" id="txtEmail" name="txtEmail"
                                    value="<?php print $email; ?>"
@@ -244,18 +253,34 @@ if (isset($_POST["btnSubmit"])) {
                                    >
                         </label>
                     </fieldset> <!-- ends contact -->
-                    
+                    $output = array();
+$output[] = '<h2>Hobbies</h2>';
+$output[] = '<form>';
+$output[] = '<fieldset class="checkbox">';
+$output[] = '<legend>Do you like (check all that apply):</legend>';
+                        foreach ($genre as $row) {
+                        $output[] = '<label for="chk' . str_replace(" ", "-", $row["fldMovieGenres"]) . '"><input type="checkbox" ';
+                        $output[] = ' id="chk' . str_replace(" ", "-", $row["fldMovieGenres"]) .  '" ';
+                        $output[] = ' name="chk' . str_replace(" ", "-", $row["fldMovieGenres"]) .  '" ';             
+                        $output[] = 'value="' . $row["fldMovieGenres"] . '">' . $row["fldMovieGenres"];
+                        $output[] = '</label>';
+                        }
+
+                        $output[] = '</fieldset>';
+
+                    print join("\n", $output);  
+                    // this prints each line as a separate  line in html
                 </fieldset> <!-- ends wrapper Two -->
-                
+
                 <fieldset class="buttons">
                     <legend></legend>
                     <input type="submit" id="btnSubmit" name="btnSubmit" value="Register" tabindex="900" class="button">
                 </fieldset> <!-- ends buttons -->
-                
+
             </fieldset> <!-- Ends Wrapper -->
         </form>
 
-    <?php
+        <?php
     } // end body submit
     ?>
 
