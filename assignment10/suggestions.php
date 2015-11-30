@@ -254,7 +254,7 @@ if (isset($_POST["btnSubmit"])) {
                         </label>
                     </fieldset> <!-- ends contact -->
                     $output = array();
-$output[] = '<h2>Hobbies</h2>';
+$output[] = '<h2>Movie Genres</h2>';
 $output[] = '<form>';
 $output[] = '<fieldset class="checkbox">';
 $output[] = '<legend>Do you like (check all that apply):</legend>';
