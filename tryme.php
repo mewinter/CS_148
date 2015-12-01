@@ -1,7 +1,10 @@
-<?php
 
-$query = "SELECT fldMovieGenres";
-$query .= "FROM tblUserInfo ";
+<?php // 
+
+include "assignment10/top.php"; 
+
+$query = "SELECT fldGenre FROM tblMovies";
+//$query .= "FROM tblMovies ";
 
 // Step Three: code can be in initialize variables or where step four needs to be
 // $buildings is an associative array

@@ -28,8 +28,7 @@ $firstName = "";
 $email = "youremail@uvm.edu";
 
 // Step Two: code can be in initialize variables or where step four needs to be
-$query = "SELECT fldMovieGenres";
-$query .= "FROM tblUserInfo ";
+$query = "SELECT fldGenre FROM tblMovies";
 
 // Step Three: code can be in initialize variables or where step four needs to be
 // $buildings is an associative array
@@ -253,23 +252,27 @@ if (isset($_POST["btnSubmit"])) {
                                    >
                         </label>
                     </fieldset> <!-- ends contact -->
-                    $output = array();
-$output[] = '<h2>Movie Genres</h2>';
-$output[] = '<form>';
-$output[] = '<fieldset class="checkbox">';
-$output[] = '<legend>Do you like (check all that apply):</legend>';
-                        foreach ($genre as $row) {
-                        $output[] = '<label for="chk' . str_replace(" ", "-", $row["fldMovieGenres"]) . '"><input type="checkbox" ';
-                        $output[] = ' id="chk' . str_replace(" ", "-", $row["fldMovieGenres"]) .  '" ';
-                        $output[] = ' name="chk' . str_replace(" ", "-", $row["fldMovieGenres"]) .  '" ';             
-                        $output[] = 'value="' . $row["fldMovieGenres"] . '">' . $row["fldMovieGenres"];
-                        $output[] = '</label>';
-                        }
+                    
+print "<h2>List box built from Database</h2>";
+// or you can print it out
+print '<label for="fldGenre">Genres ';
+print '<select id="fldGenre" ';
+print '        name="Genres"';
+print '        tabindex="300" >';
 
-                        $output[] = '</fieldset>';
 
-                    print join("\n", $output);  
-                    // this prints each line as a separate  line in html
+foreach ($buildings as $row) {
+
+    print '<option ';
+    if ($building == $row["fldGenre"])
+        print " selected='selected' ";
+
+    print 'value="' . $row["fldGenre"] . '">' . $row["fldGenre"];
+
+    print '</option>';
+}
+
+print '</select></label>';
                 </fieldset> <!-- ends wrapper Two -->
 
                 <fieldset class="buttons">
