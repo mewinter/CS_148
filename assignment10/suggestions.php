@@ -26,6 +26,7 @@ $yourURL = $domain . $phpSelf;
 // in the order they appear on the form
 $firstName = "";
 $email = "youremail@uvm.edu";
+$genres = "Comedy";
 
 // Step Two: code can be in initialize variables or where step four needs to be
 $query = "SELECT fldGenre FROM tblMovies";
