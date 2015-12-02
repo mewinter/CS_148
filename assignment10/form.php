@@ -1,6 +1,6 @@
 <?php
-/* the purpose of this page is to display a form to allow a user and allow us
- * to add a new user or update an existing user 
+/* the purpose of this page is to display a form to allow a poet and allow us
+ * to add a new poet or update an existing poet 
  * 
  * Written By: Robert Erickson robert.erickson@uvm.edu
  
@@ -10,7 +10,6 @@ include "top.php";
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
-$debug = true;
 $update = false;
 
 // SECTION: 1a.
@@ -29,7 +28,7 @@ $yourURL = $domain . $phpSelf;
 // in the order they appear on the form
 
 if (isset($_GET["id"])) {
-    $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
+    $pmkPoetId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
 
     $query = 'SELECT fldFirstName, fldLastName, fldBirthDate ';
     $query .= 'FROM tblUserInfo WHERE pmkUserId = ?';
@@ -40,7 +39,7 @@ if (isset($_GET["id"])) {
     $lastName = $results[0]["fldLastName"];
     $birthday = $results[0]["fldBirthDate"];
 } else {
-    $pmkUserId = -1;
+    $pmkPoetId = -1;
     $firstName = "";
     $lastName = "";
     $birthday = "";
@@ -84,7 +83,6 @@ if (isset($_POST["btnSubmit"])) {
 // SECTION: 2b Sanitize (clean) data
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
-   print '<p>Submitted';
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     if ($pmkUserId > 0) {
         $update = true;
@@ -104,7 +102,7 @@ if (isset($_POST["btnSubmit"])) {
 //
 // SECTION: 2c Validation
 //
-print '<p> 2c';
+
     if ($firstName == "") {
         $errorMsg[] = "Please enter your first name";
         $firstNameERROR = true;
@@ -131,7 +129,6 @@ print '<p> 2c';
 //
 // Process for when the form passes validation (the errorMsg array is empty)
 //
-    print '<p> 2d';
     if (!$errorMsg) {
         if ($debug) {
             print "<p>Form is valid</p>";
@@ -244,7 +241,7 @@ print '<p> 2c';
               method="post"
               id="frmRegister">
             <fieldset class="wrapper">
-                <legend>User Information</legend>
+                <legend>Poets</legend>
 
                 <input type="hidden" id="hidUserId" name="hidUserId"
                        value="<?php print $pmkUserId; ?>"
@@ -294,3 +291,6 @@ include "footer.php";
 if ($debug)
     print "<p>END OF PROCESSING</p>";
 ?>
+</article>
+</body>
+</html>

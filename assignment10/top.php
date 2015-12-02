@@ -43,6 +43,8 @@ require_once('lib/custom-functions.php');
         
         require_once($includeDBPath . 'Database.php');
         
+        require_once('lib/validation-functions.php');
+        
         // %^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
         //
         // PATH SETUP

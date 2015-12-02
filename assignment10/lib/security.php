@@ -41,6 +41,8 @@ function securityCheck($path_parts, $yourURL, $form = false) {
     $whiteListPages[] = 'CreatePlan.php';
     $whiteListPages[] = 'tableplan.php';
     $whiteListPages[] = 'suggestions.php';
+    $whiteListPages[] = 'form.php';
+    
 
     //add all the folders to this array
     $whiteListFolders = array();
