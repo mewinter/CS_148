@@ -3,7 +3,7 @@
  * to add a new user or update an existing user 
  * 
  * Written By: Robert Erickson robert.erickson@uvm.edu
- 
+
  */
 
 include "top.php";
@@ -84,7 +84,7 @@ if (isset($_POST["btnSubmit"])) {
 // SECTION: 2b Sanitize (clean) data
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
-    
+
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     if ($pmkUserId > 0) {
         $update = true;
@@ -135,15 +135,14 @@ if (isset($_POST["btnSubmit"])) {
     if (!$errorMsg) {
         if ($debug) {
             print '<p> 2d';
-            print "<p>Form is valid</p>"; 
+            print "<p>Form is valid</p>";
         }
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2e Save Data
-       if ($debug) {
+        if ($debug) {
             print '<p> 2e';
-
         }
 
         $dataEntered = false;
@@ -156,9 +155,17 @@ if (isset($_POST["btnSubmit"])) {
                 $query = 'INSERT INTO tblUserInfo SET ';
             }
 
+            if ($debug) {
+                print '<p> before query';
+            }
+
             $query .= 'fldFirstName = ?, ';
             $query .= 'fldLastName = ?, ';
             $query .= 'fldBirthDate = ? ';
+
+            if ($debug) {
+                print '<p> after query';
+            }
 
             if ($update) {
                 $query .= 'WHERE pmkUserId = ?';
@@ -168,13 +175,17 @@ if (isset($_POST["btnSubmit"])) {
                     $results = $thisDatabase->update($query, $data, 1, 0, 0, 0, false, false);
                 }
             } else {
-                if ($_SERVER["REMOTE_USER"] == 'mewinter'){
+                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
                     $results = $thisDatabase->insert($query, $data);
                     $primaryKey = $thisDatabase->lastInsert();
                     if ($debug) {
                         print "<p>pmk= " . $primaryKey;
                     }
                 }
+            }
+
+            if ($debug) {
+                print '<p> update';
             }
 
             // all sql statements are done so lets commit to our changes
@@ -193,10 +204,10 @@ if (isset($_POST["btnSubmit"])) {
         }
     } // end form is valid
 } // ends if form was submitted.
-        if ($debug) {
-            print '<p> Form submitted';
-            print "<p>Section 3</p>"; 
-        }
+if ($debug) {
+    print '<p> Form submitted';
+    print "<p>Section 3</p>";
+}
 
 //#############################################################################
 //
@@ -263,7 +274,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtFirstName" name="txtFirstName"
                            value="<?php print $firstName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your first name"
-    <?php if ($firstNameERROR) print 'class="mistake"'; ?>
+                           <?php if ($firstNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            autofocus>
                 </label>
@@ -272,7 +283,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtLastName" name="txtLastName"
                            value="<?php print $lastName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your last name"
-    <?php if ($lastNameERROR) print 'class="mistake"'; ?>
+                           <?php if ($lastNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>
@@ -281,7 +292,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtBirthday" name="txtBirthday"
                            value="<?php print $birthday; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your Birthday"
-    <?php if ($birthdayERROR) print 'class="mistake"'; ?>
+                           <?php if ($birthdayERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>                
