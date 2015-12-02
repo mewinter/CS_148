@@ -84,7 +84,7 @@ if (isset($_POST["btnSubmit"])) {
 // SECTION: 2b Sanitize (clean) data
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
-   print '<p>Submitted';
+    
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     if ($pmkUserId > 0) {
         $update = true;
@@ -104,7 +104,7 @@ if (isset($_POST["btnSubmit"])) {
 //
 // SECTION: 2c Validation
 //
-print '<p> 2c';
+
     if ($firstName == "") {
         $errorMsg[] = "Please enter your first name";
         $firstNameERROR = true;
@@ -131,16 +131,20 @@ print '<p> 2c';
 //
 // Process for when the form passes validation (the errorMsg array is empty)
 //
-    print '<p> 2d';
+
     if (!$errorMsg) {
         if ($debug) {
-            print "<p>Form is valid</p>";
+            print '<p> 2d';
+            print "<p>Form is valid</p>"; 
         }
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2e Save Data
-//
+       if ($debug) {
+            print '<p> 2e';
+
+        }
 
         $dataEntered = false;
         try {
@@ -189,6 +193,11 @@ print '<p> 2c';
         }
     } // end form is valid
 } // ends if form was submitted.
+        if ($debug) {
+            print '<p> Form submitted';
+            print "<p>Section 3</p>"; 
+        }
+
 //#############################################################################
 //
 // SECTION 3 Display Form
