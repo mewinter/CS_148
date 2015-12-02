@@ -10,6 +10,7 @@ include "top.php";
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
+$debug = false;
 $update = false;
 
 // SECTION: 1a.
@@ -144,7 +145,7 @@ if (isset($_POST["btnSubmit"])) {
             $thisDatabase->db->beginTransaction();
 
             if ($update) {
-                $query = 'UPDATE tblUserInfoSET ';
+                $query = 'UPDATE tblUserInfo SET ';
             } else {
                 $query = 'INSERT INTO tblUserInfo SET ';
             }
@@ -157,11 +158,11 @@ if (isset($_POST["btnSubmit"])) {
                 $query .= 'WHERE pmkUserId = ?';
                 $data[] = $pmkUserId;
 
-                if ($_SERVER["REMOTE_USER"] == 'rerickso') {
+                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
                     $results = $thisDatabase->update($query, $data, 1, 0, 0, 0, false, false);
                 }
             } else {
-                if ($_SERVER["REMOTE_USER"] == 'rerickso'){
+                if ($_SERVER["REMOTE_USER"] == 'mewinter'){
                     $results = $thisDatabase->insert($query, $data);
                     $primaryKey = $thisDatabase->lastInsert();
                     if ($debug) {
@@ -291,6 +292,3 @@ include "footer.php";
 if ($debug)
     print "<p>END OF PROCESSING</p>";
 ?>
-</article>
-</body>
-</html>
