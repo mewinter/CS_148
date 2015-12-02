@@ -10,7 +10,7 @@ include "top.php";
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
-$debug = false;
+$debug = true;
 $update = false;
 
 // SECTION: 1a.
