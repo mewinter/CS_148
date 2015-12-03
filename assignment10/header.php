@@ -1,11 +1,9 @@
 <!-- %%%%%%%%%%%%%%%%%%%%%%     Page header   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 
 <header>
-    <figure class=float_left>
-<!--        <img alt="The Universtiy of Vermont" src="images/uvmlogo.png">-->
-    </figure>
-    
-    <h1>Movies</h1>
+
+   <img src="header.jpg" alt="header pic" style=""width="1500" height="150">
+   
     
 </header>
 
