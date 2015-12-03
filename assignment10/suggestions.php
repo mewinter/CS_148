@@ -32,9 +32,10 @@ if (isset($_GET["id"])) {
     $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
 
     $query = 'SELECT fldFirstName, fldLastName, fldBirthDate ';
-    $query .= 'FROM tblUserInfo WHERE pmkUserId = ?';
+    $query .= 'FROM tblUserInfo ';
+    //        . 'WHERE pmkUserId = ?';
 
-    $results = $thisDatabase->select($query, array($pmkUserId), 1, 0, 0, 0, false, false);
+    $results = $thisDatabaseWriter->select($query, array($pmkUserId), 0, 0, 0, 0, false, false);
 
     $firstName = $results[0]["fldFirstName"];
     $lastName = $results[0]["fldLastName"];
@@ -167,9 +168,9 @@ if (isset($_POST["btnSubmit"])) {
                 print '<p> after query';
             }
 
-            if ($update) {
-                $query .= 'WHERE pmkUserId = ?';
-                $data[] = $pmkUserId;
+//            if ($update) {
+//                $query .= 'WHERE pmkUserId = ?';
+//                $data[] = $pmkUserId;
 
                 //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
                     $results = $thisDatabaseWriter->update($query, $data, 1, 0, 0, 0, false, false);
@@ -182,7 +183,7 @@ if (isset($_POST["btnSubmit"])) {
                         print "<p>pmk= " . $primaryKey;
                     }
             //    }
-            }
+//            }
 
             if ($debug) {
                 print '<p> update';
