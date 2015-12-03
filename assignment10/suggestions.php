@@ -104,8 +104,8 @@ if (isset($_POST["btnSubmit"])) {
     $birthday = htmlentities($_POST["txtBirthday"], ENT_QUOTES, "UTF-8");
     $data[] = $birthday;
 
-    $email = filter_var($_POST["txtEmail"], FILTER_SANITIZE_EMAIL);
-    $dataRecord[] = $email;
+    $email = filter_var($_POST["txtEmail"], FILTER_SANITIZE_EMAIL, 'UTF-8');
+    $data[] = $email;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
@@ -177,7 +177,7 @@ if (isset($_POST["btnSubmit"])) {
 
             $query .= 'fldFirstName = ?, ';
             $query .= 'fldLastName = ?, ';
-            $query .= 'fldBirthDate = ? ';
+            $query .= 'fldBirthDate = ?, ';
             $query .= 'fldEmail = ? ';
 
             if ($debug) {
@@ -188,7 +188,7 @@ if (isset($_POST["btnSubmit"])) {
                 $query .= 'WHERE pmkUserId = ?';
                 $data[] = $pmkUserId;
                 //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $results = $thisDatabaseWriter->update($query, $data, 0, 0, 0, 0, false, false);
+                $results = $thisDatabaseWriter->update($query, $data, 1, 0, 0, 0, false, false);
                 // }
                   } else {
                 //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
@@ -198,7 +198,7 @@ if (isset($_POST["btnSubmit"])) {
                     print "<p>pmk= " . $primaryKey;
                 }
             }
-//            }
+//               }
 
             if ($debug) {
                 print '<p> update';

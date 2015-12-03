@@ -1,43 +1,23 @@
 /* 
-    Created on : September 9, 2015, 10:27:26 AM
-    Author     : Meaghan Winter
+    Created on : Jun 10, 2015, 10:27:26 AM
+    Author     : Robert Erickson
 */
 @import url('reset.css');
 /*------------------------   standard elements  ----------------------------- */
 body{
     margin: 0 5% 0 5%;
-    /*background-color: #74D87E; */
-    background: #f5f5f5;
-    font-family: sans-serif;
-    
 }
-
 article{
     padding: 2em;
-    background:grey;
-    background-color: #cc0000;
 }
 figcaption {
     color: #839e99;
     font-style: italic;
     text-align: center;
 }
-h1 {
-    font-size: 2.5em; /* 40px/16=2.5em */
-}
-
-h2 {
-    font-size: 1.875em; /* 30px/16=1.875em */
-}
 
 header{
     overflow: auto; /* forces header to fit to figure */
-    background-color: #cc0000;
-    margin-bottom: 2em;
-    margin-top: 1em;
-    padding: 1em;
-    text-align: left;
-    overflow: hidden;
 }
 
 header .float_left{
@@ -47,7 +27,6 @@ header .float_left{
 header h1{
     padding-bottom: 2em;
     padding-top: 75px;
-
 }
 
 img{
@@ -55,43 +34,14 @@ img{
 }
 
 section{
-    padding: 1em;
-    width: 90%;  
-    background-color: #cc0000;
-    margin: 1em;
+    padding: 2em;
+    width: 40%;  
 }
 
-.oneColumn{
-    width: 100%;
-}
-.fourColumns{
-    width: 25%;
-    float: left;
-}
-
-.clearFloats{
-    clear: both;
-}
-
-.academicYear{
-    padding: 2em 0 2em 0;
-
-}
-.academicYear:after {
-    content:"";
-    display:table;
-    clear:both;
-}
 /*------------------------   classes           ------------------------------ */
 .float_left {
+    border: thin solid darkslategray;
     float: left;
-    margin: 1em;
-    padding: 0.5em;
-   // height: 100px;
-}
-
-.float_center {
-    float: inherit;
     margin: 1em 1em 1em 0;
     padding: 0.5em;
 }
@@ -101,7 +51,7 @@ section{
 }
 
 .odd{
-    background-color: lightcyan;
+    background-color: darksalmon;
 }
 
 .small {
@@ -113,27 +63,24 @@ nav ol li{
     display: inline-block;
     list-style-type: none;
     padding-right: 2em;
-    padding-left: 2em;
 }
 
 /*------------------------   table page  only  ------------------------------ */
-
 #table aside{
     height: 600px; 
     float: left; 
-    overflow: scroll; 
+    overflow: auto; 
     margin-left: 2em;            
 }
 #table section{
     width: 35%; 
     height: 600px; 
     float: left; 
-    overflow: scroll;
+    overflow: auto;
 }
 #table table{
     border: medium #000080 solid;
     border-collapse: collapse;
-    margin: 1em;
 }
 
 #table td {
@@ -145,156 +92,97 @@ nav ol li{
     text-align: left;
 }
 
-table{
-    border: medium #000080 solid;
-    border-collapse: collapse;
-    width: 90%;
-    margin-bottom: 1em;
-    margin: auto;
-    max-width: 600px;
-}
-tbody{height: 10em;
-      overflow: auto;}
-td, th {
-    border: thin #000080 solid;
-    border-collapse: collapse;
+table :hover
+{
+    background-color: aqua;
+    border: 2px solid red; 
 }
 
-tr:nth-child(even) {
-    background-color: lightcyan;
+#accordion { 
+                width: 500px; 
+                margin: 100px auto; }
+            #accordion div {
+                float: left;
+                width:10%;
+                height: 300px;
+                overflow: hidden;}
+            #accordion:hover div { 
+                width: 9%; }
+            #accordion:hover div:hover {
+                width: 203px;
+                overflow: auto; }
+            #accordion {
+                width: 1200px;
+                height: 400px;
+                }
+            #accordion div {
+                    height:800px;
+                    overflow: hidden;}
+            #accordion:hover div {
+                    height: 800px; }
+            #accordion:hover div:hover {
+                    height: 300px;
+                    overflow: hidden; }
+img{
+    height:300px;
+   
 }
 
-tr:nth-child(odd){
-    background-color: whitesmoke;
+button {
+   border-top: 1px solid #96d1f8;
+   background: #65a9d7;
+   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+   background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+   background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+   background: -o-linear-gradient(top, #3e779d, #65a9d7);
+   padding: 6.5px 13px;
+   -webkit-border-radius: 0px;
+   -moz-border-radius: 0px;
+   border-radius: 0px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: white;
+   font-size: 16px;
+   font-family: Georgia, serif;
+   text-decoration: none;
+   vertical-align: middle;
+   }
+button:hover {
+   border-top-color: #28597a;
+   background: #28597a;
+   color: #ccc;
+   }
+button:active {
+   border-top-color: #1b435e;
+   background: #1b435e;
+   }
+   
+   #header {
+    background-color:#f5f5f5;
+    color:white;
+    text-align:center;
+    padding:5px;
 }
-/*------------------------- Class colors ------------------------------------*/
-/*.Fall{
-    background-color:rgba(255,165,0,0.3);
-}
-.Spring{
-    background-color:rgba(255,255,0,0.3);
-}
-.Summer{
-   background-color:rgba(0,255,0,0.3); 
-}
-.Winter{
-   background-color:rgba(255,255,255,0.3);
-}*/
-
-.Major{
-    background-color:#ffff99;
-}
-
-.Minor{
-    background-color:#74D87E;
-}
-
-.Elective{
-    background-color:#74D87E;
-}
-
-.GenEd{
-    background-color:#839e99;
-}
-
-
-/************   form section ******************/
-#form article #main{
-    color: #cc0000;
-    float: none;
-    margin: auto; /* because of the fixed width this centers the form */
-    text-align: left;
-   // width: 600px; /* not responsive but fixed */
-}
-
-/* need to clear any floats that may exist */
-fieldset{
-    border: 1px solid #E1D885;
-    clear: both;
-    border-radius: 20px;
-    color: #E1D885;
-    margin: .5em;
-}
-fieldset.textBoxes{
+#nav {
+    line-height:30px;
+    background-color:#eeeeee;
+    height:300px;
+    width:100px;
     float:left;
+    padding:5px;	      
 }
-fieldset.textBoxes label{
-    display:block;
-    text-align: right;
+#section {
+    width:350px;
+    float:left;
+    padding:10px;	 	 
 }
-fieldset.textBoxes input{
-    width: 15em;
-}
-
-/* just pushes content to left side of the box */
-fieldset.contact{
-    float: left;
-    padding: .5px;
-}
-/* when you look at the labels this pushes them next to the input and right
-aligns them. display block means they are each on their own line */
-fieldset.contact label{
-    color: #E1D885;
-    display: block;
-    text-align: right /* pushes the text to the right where they line up */
-        /* the float left above pushes everything back to the left */
-}
-
-fieldset.contact input{
-    width: 15em; /* works with above to be the same size for the boxes */
-    padding: .5em;
-}
-
-fieldset.radio{
-    align:left;
-}
-
-
-fieldset.buttons{
-    border: #FF6;
-    margin: auto; 
-    align: left;
-}
-
-fieldset.wrapper{
-    border: 0;
-    margin: auto;
-    color: #E1D885;
-    padding: .5em;
-}
-
-fieldset.wrapper legend{
-    color: #E1D885;
-    font-size: 1.2em;
-    font-weight: bold;
-    //margin-top: 10px;
-    padding: .5em;
-}
-
-fieldset.wrapper > legend {
-    /* I only want the first lengend if it follows the class wrapper */
-    font-size: 2em;
-    color: #E1D885;
-    border: 0;
-    font-size: 1em;
-    font-weight: bold;
-}
-
-label {
-    color: #E1D885;
-    display: block;
-    font-size: 1em;
-    font-weight: bold;
-}
-
-/* Style the erros in the form so they are visible */
-.mistake{
-    color: #fff;
-    background-color: #800;
-    border: thin solid #000;     
-}
-
-/*style the list of errors that will show before the form */
-#errors ol li{
-    color: red;
+#footer {
+    background-color:#f5f5f5;
+    color:white;
+    clear:both;
+    text-align:center;
+    padding:5px;	 	 
 }
