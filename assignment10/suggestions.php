@@ -147,7 +147,7 @@ if (isset($_POST["btnSubmit"])) {
 
         $dataEntered = false;
         try {
-            $thisDatabase->db->beginTransaction();
+            $thisDatabaseWriter->db->beginTransaction();
 
             if ($update) {
                 $query = 'UPDATE tblUserInfo SET ';
@@ -171,17 +171,17 @@ if (isset($_POST["btnSubmit"])) {
                 $query .= 'WHERE pmkUserId = ?';
                 $data[] = $pmkUserId;
 
-                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                    $results = $thisDatabase->update($query, $data, 1, 0, 0, 0, false, false);
-                }
-            } else {
-                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                    $results = $thisDatabase->insert($query, $data);
-                    $primaryKey = $thisDatabase->lastInsert();
+                //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                    $results = $thisDatabaseWriter->update($query, $data, 1, 0, 0, 0, false, false);
+               // }
+          //  } else {
+           //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                    $results = $thisDatabaseWriter->insert($query, $data);
+                    $primaryKey = $thisDatabaseWriter->lastInsert();
                     if ($debug) {
                         print "<p>pmk= " . $primaryKey;
                     }
-                }
+            //    }
             }
 
             if ($debug) {
@@ -190,14 +190,14 @@ if (isset($_POST["btnSubmit"])) {
 
             // all sql statements are done so lets commit to our changes
             //if($_SERVER["REMOTE_USER"]=='rerickso'){
-            $dataEntered = $thisDatabase->db->commit();
+            $dataEntered = $thisDatabaseWriter->db->commit();
             // }else{
             //     $thisDatabase->db->rollback();
             // }
             if ($debug)
                 print "<p>transaction complete ";
         } catch (PDOExecption $e) {
-            $thisDatabase->db->rollback();
+            $thisDatabaseWriter->db->rollback();
             if ($debug)
                 print "Error!: " . $e->getMessage() . "</br>";
             $errorMsg[] = "There was a problem with accpeting your data please contact us directly.";
