@@ -1,15 +1,16 @@
 <?php
-/* the purpose of this page is to display a form to allow a poet and allow us
- * to add a new poet or update an existing poet 
+/* the purpose of this page is to display a form to allow a user and allow us
+ * to add a new user or update an existing user 
  * 
- * Written By: Robert Erickson robert.erickson@uvm.edu
- 
+ * Written By: Meaghan Winter
+
  */
 
 include "top.php";
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
+$debug = true;
 $update = false;
 
 // SECTION: 1a.
@@ -28,21 +29,36 @@ $yourURL = $domain . $phpSelf;
 // in the order they appear on the form
 
 if (isset($_GET["id"])) {
-    $pmkPoetId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
+    $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
 
-    $query = 'SELECT fldFirstName, fldLastName, fldBirthDate ';
-    $query .= 'FROM tblUserInfo WHERE pmkUserId = ?';
+    $query = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail ';
+    $query .= 'FROM tblUserInfo '
+            . 'WHERE pmkUserId = ?';
 
-    $results = $thisDatabase->select($query, array($pmkUserId), 1, 0, 0, 0, false, false);
+    $results = $thisDatabaseWriter->select($query, array($pmkUserId), 1, 0, 0, 0, false, false);
 
     $firstName = $results[0]["fldFirstName"];
     $lastName = $results[0]["fldLastName"];
     $birthday = $results[0]["fldBirthDate"];
+    $email = $results[0]["fldEmail"];
+
+    if ($debug) {
+        print '<p> initialize genres';
+    }
+// Step Two: code can be in initialize variables or where step four needs to be
+    $query = "SELECT fldGenre ";
+    $query .= "FROM tblMovies ";
+
+// Step Three: code can be in initialize variables or where step four needs to be
+// $buildings is an associative array
+    $genres = $thisDatabase->select($query, "", 0, 0, 0, 0, false, false);
 } else {
-    $pmkPoetId = -1;
+    $pmkUserId = -1;
     $firstName = "";
     $lastName = "";
     $birthday = "";
+    $email = "";
+    //$genres = "";
 }
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
@@ -54,6 +70,9 @@ if (isset($_GET["id"])) {
 $firstNameERROR = false;
 $lastNameERROR = false;
 $birthdayERROR = false;
+$emailERROR = false;
+$genresERROR = false;
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1e misc variables
@@ -83,6 +102,7 @@ if (isset($_POST["btnSubmit"])) {
 // SECTION: 2b Sanitize (clean) data
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
+
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     if ($pmkUserId > 0) {
         $update = true;
@@ -97,6 +117,9 @@ if (isset($_POST["btnSubmit"])) {
 
     $birthday = htmlentities($_POST["txtBirthday"], ENT_QUOTES, "UTF-8");
     $data[] = $birthday;
+
+    $email = filter_var($_POST["txtEmail"], FILTER_SANITIZE_EMAIL, 'UTF-8');
+    $data[] = $email;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
@@ -123,25 +146,38 @@ if (isset($_POST["btnSubmit"])) {
         $errorMsg[] = "Please enter your birthday";
         $birthdayERROR = true;
     }// should check to make sure its the correct date format
+    //
+//email checking
+    if ($email == "") {
+        $errorMsg[] = "Please enter your email address";
+        $emailERROR = true;
+    } elseif (!verifyEmail($email)) {
+        $errorMsg[] = "Your email address appears to be incorrect.";
+        $emailERROR = true;
+    }
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2d Process Form - Passed Validation
 //
 // Process for when the form passes validation (the errorMsg array is empty)
 //
+
     if (!$errorMsg) {
         if ($debug) {
+            print '<p> 2d';
             print "<p>Form is valid</p>";
         }
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2e Save Data
-//
+        if ($debug) {
+            print '<p> 2e';
+        }
 
         $dataEntered = false;
         try {
-            $thisDatabase->db->beginTransaction();
+            $thisDatabaseWriter->db->beginTransaction();
 
             if ($update) {
                 $query = 'UPDATE tblUserInfo SET ';
@@ -149,43 +185,61 @@ if (isset($_POST["btnSubmit"])) {
                 $query = 'INSERT INTO tblUserInfo SET ';
             }
 
+            if ($debug) {
+                print '<p> before query';
+            }
+
             $query .= 'fldFirstName = ?, ';
             $query .= 'fldLastName = ?, ';
-            $query .= 'fldBirthDate = ? ';
+            $query .= 'fldBirthDate = ?, ';
+            $query .= 'fldEmail = ?, ';
+            $query .= 'fldGenres = ? ';
+
+            if ($debug) {
+                print '<p> after query';
+            }
 
             if ($update) {
                 $query .= 'WHERE pmkUserId = ?';
                 $data[] = $pmkUserId;
-
-                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                    $results = $thisDatabase->update($query, $data, 1, 0, 0, 0, false, false);
-                }
+                //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                $results = $thisDatabaseWriter->update($query, $data, 1, 0, 0, 0, false, false);
+                // }
             } else {
-                if ($_SERVER["REMOTE_USER"] == 'mewinter'){
-                    $results = $thisDatabase->insert($query, $data);
-                    $primaryKey = $thisDatabase->lastInsert();
-                    if ($debug) {
-                        print "<p>pmk= " . $primaryKey;
-                    }
+                //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                $results = $thisDatabaseWriter->insert($query, $data);
+                $primaryKey = $thisDatabaseWriter->lastInsert();
+                if ($debug) {
+                    print "<p>pmk= " . $primaryKey;
                 }
+            }
+//               }
+
+            if ($debug) {
+                print '<p> update';
             }
 
             // all sql statements are done so lets commit to our changes
             //if($_SERVER["REMOTE_USER"]=='rerickso'){
-            $dataEntered = $thisDatabase->db->commit();
+            $dataEntered = $thisDatabaseWriter->db->commit();
             // }else{
             //     $thisDatabase->db->rollback();
             // }
             if ($debug)
                 print "<p>transaction complete ";
         } catch (PDOExecption $e) {
-            $thisDatabase->db->rollback();
+            $thisDatabaseWriter->db->rollback();
             if ($debug)
                 print "Error!: " . $e->getMessage() . "</br>";
             $errorMsg[] = "There was a problem with accpeting your data please contact us directly.";
         }
     } // end form is valid
 } // ends if form was submitted.
+if ($debug) {
+    print '<p> Form submitted';
+    print "<p>Section 3</p>";
+}
+
 //#############################################################################
 //
 // SECTION 3 Display Form
@@ -241,7 +295,7 @@ if (isset($_POST["btnSubmit"])) {
               method="post"
               id="frmRegister">
             <fieldset class="wrapper">
-                <legend>Poets</legend>
+                <legend>User Information</legend>
 
                 <input type="hidden" id="hidUserId" name="hidUserId"
                        value="<?php print $pmkUserId; ?>"
@@ -251,7 +305,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtFirstName" name="txtFirstName"
                            value="<?php print $firstName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your first name"
-    <?php if ($firstNameERROR) print 'class="mistake"'; ?>
+                           <?php if ($firstNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            autofocus>
                 </label>
@@ -260,7 +314,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtLastName" name="txtLastName"
                            value="<?php print $lastName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your last name"
-    <?php if ($lastNameERROR) print 'class="mistake"'; ?>
+                           <?php if ($lastNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>
@@ -268,12 +322,38 @@ if (isset($_POST["btnSubmit"])) {
                 <label for="txtBirthday" class="required">Birthday
                     <input type="text" id="txtBirthday" name="txtBirthday"
                            value="<?php print $birthday; ?>"
-                           tabindex="100" maxlength="45" placeholder="Enter your Birthday"
-    <?php if ($birthdayERROR) print 'class="mistake"'; ?>
+                           tabindex="100" maxlength="45" placeholder="YYYY-MM-DD"
+                           <?php if ($birthdayERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
-                </label>                
+                </label>  
+
+                <label for="txtEmail" class="required">Email
+                    <input type="text" id="txtEmail" name="txtEmail"
+                           value="<?php print $email; ?>"
+                           tabindex="120" maxlength="45" placeholder="Enter a valid email address"
+                           <?php if ($emailERROR) print 'class="mistake"'; ?>
+                           onfocus="this.select()" 
+                           autofocus>
+                </label>
+
             </fieldset> <!-- ends contact -->
+<!--LIST BOX MOVIE PICK-->
+print "<h2>List box built from Database</h2>";
+print '<label for="fldMoviePick">Building<select id="fldMoviePick" name = fldMoviePick tabindex = "300">';
+foreach ($moviepick as $row) {
+
+            print '<option ';
+                if ($building == $row["fldMoviePick"])
+                print " selected='selected' ";
+
+                print 'value="' . $row["fldMoviePick"] . '">' . $row["fldMoviePick"];
+
+                print '</option>';
+            }
+
+            print '</select></label>';
+
             </fieldset> <!-- ends wrapper Two -->
             <fieldset class="buttons">
                 <legend></legend>
@@ -291,6 +371,3 @@ include "footer.php";
 if ($debug)
     print "<p>END OF PROCESSING</p>";
 ?>
-</article>
-</body>
-</html>

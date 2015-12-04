@@ -28,8 +28,7 @@ $yourURL = $domain . $phpSelf;
 // Initialize variables one for each form element
 // in the order they appear on the form
 
-if (isset($_GET["id"])) {
-    $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
+
 
     $query = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail ';
     $query .= 'FROM tblUserInfo '
@@ -41,12 +40,27 @@ if (isset($_GET["id"])) {
     $lastName = $results[0]["fldLastName"];
     $birthday = $results[0]["fldBirthDate"];
     $email = $results[0]["fldEmail"];
-} else {
+    
+    // Step Two: code can be in initialize variables or where step four needs to be
+    $query1 = "SELECT DISTINCT fldGenre, pmkMovieId ";
+    $query1 .= "FROM tblMovies ";
+    $query1 .= "ORDER BY fldGenre ";
+
+// Step Three: code can be in initialize variables or where step four needs to be
+// $buildings is an associative array
+    $genres = $thisDatabaseReader->select($query1, "", 0, 1, 0, 0, false, false);
+
+    if ($debug) {
+        print '<p> initialize genres';
+    }
+
+ else {
     $pmkUserId = -1;
     $firstName = "";
     $lastName = "";
     $birthday = "";
     $email = "";
+    $genres = "";
 }
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
@@ -59,6 +73,8 @@ $firstNameERROR = false;
 $lastNameERROR = false;
 $birthdayERROR = false;
 $emailERROR = false;
+$genresERROR = false;
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1e misc variables
@@ -178,7 +194,8 @@ if (isset($_POST["btnSubmit"])) {
             $query .= 'fldFirstName = ?, ';
             $query .= 'fldLastName = ?, ';
             $query .= 'fldBirthDate = ?, ';
-            $query .= 'fldEmail = ? ';
+            $query .= 'fldEmail = ?, ';
+            $query .= 'fldGenres = ? ';
 
             if ($debug) {
                 print '<p> after query';
@@ -190,7 +207,7 @@ if (isset($_POST["btnSubmit"])) {
                 //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
                 $results = $thisDatabaseWriter->update($query, $data, 1, 0, 0, 0, false, false);
                 // }
-                  } else {
+            } else {
                 //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
                 $results = $thisDatabaseWriter->insert($query, $data);
                 $primaryKey = $thisDatabaseWriter->lastInsert();
@@ -323,16 +340,47 @@ if ($debug) {
                 </label>
 
             </fieldset> <!-- ends contact -->
-            </fieldset> <!-- ends wrapper Two -->
-            <fieldset class="buttons">
-                <legend></legend>
-                <input type="submit" id="btnSubmit" name="btnSubmit" value="Save" tabindex="900" class="button">
-            </fieldset> <!-- ends buttons -->
-            </fieldset> <!-- Ends Wrapper -->
-        </form>
-        <?php
-    } // end body submit
-    ?>
+            <!--            Step Four: prepare output two methods, only do one of them
+            
+            //  Here is how to code it -->
+ <?php          
+$output = array();
+$output[] = '<h2>Genres</h2>';
+$output[] = '<form>';
+$output[] = '<fieldset class="checkbox">';
+$output[] = '<legend>Do you like (check all that apply):</legend>';
+
+//print '<pre>';
+//print_r ($genres);
+
+foreach ($genres as $row) {
+
+    $output[] = '<label for="chk' . str_replace(" ", "-", $row["fldGenre"]) . '"><input type="checkbox" ';
+    $output[] = ' id="chk' . str_replace(" ", "-", $row["fldGenre"]) .  '" ';
+    $output[] = ' name="chk' . str_replace(" ", "-", $row["fldGenre"]) .  '" ';             
+    $output[] = 'value="' . $row["pmkMovieId"] . '">' . $row["fldGenre"];
+    $output[] = '</label>';
+}
+
+$output[] = '</fieldset>';
+
+print join("\n", $output);  
+?>
+                    
+
+
+                <!--// this prints each line as a separate  line in html-->
+
+                </fieldset> <!-- ends wrapper Two -->
+                <fieldset class="buttons">
+                    <legend></legend>
+                    <input type="submit" id="btnSubmit" name="btnSubmit" value="Save" tabindex="900" class="button">
+                </fieldset> <!-- ends buttons -->
+                </fieldset> <!-- Ends Wrapper -->
+            </form>
+            <?php
+        } // end body submit
+        ?>
 </article>
 
 <?php
