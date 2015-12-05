@@ -30,18 +30,26 @@ $yourURL = $domain . $phpSelf;
 
 
 
-$query = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
-$query .= 'FROM tblUserInfo '
+$queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
+$queryinfo .= 'FROM tblUserInfo '
         . 'WHERE pmkUserId = ?';
 
-$results = $thisDatabaseWriter->select($query, array($pmkUserId), 1, 0, 0, 0, false, false);
+$querypick = 'SELECT fnkGenre, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
 
-$firstName = $results[0]["fldFirstName"];
-$lastName = $results[0]["fldLastName"];
-$birthday = $results[0]["fldBirthDate"];
-$email = $results[0]["fldEmail"];
-$genres = $results[0]["fnkGenre"];
-$movies = $results[0]['fldTitle'];
+$resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
+$resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
+
+$firstName = $resultsInfo[0]["fldFirstName"];
+$lastName = $resultsInfo[0]["fldLastName"];
+$birthday = $resultsInfo[0]["fldBirthDate"];
+$email = $resultsInfo[0]["fldEmail"];
+$genres = $resultsInfo[0]["fnkGenre"];
+
+$movies = $resultsPick[0]['fldTitle'];
+
+$frequency = $resultsInfo[0]["fldFrequency"];
+
+$pmkUserId = $resultsPick [0]['fnkUserId'];
 
 // query for genre initialization
 $query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
@@ -127,16 +135,22 @@ if (isset($_POST["btnSubmit"])) {
     // I am not putting the ID in the $data array at this time
 
     $firstName = htmlentities($_POST["txtFirstName"], ENT_QUOTES, "UTF-8");
-    $data[] = $firstName;
+    $dataInfo[] = $firstName;
 
     $lastName = htmlentities($_POST["txtLastName"], ENT_QUOTES, "UTF-8");
-    $data[] = $lastName;
+    $dataInfo[] = $lastName;
 
     $birthday = htmlentities($_POST["txtBirthday"], ENT_QUOTES, "UTF-8");
-    $data[] = $birthday;
+    $dataInfo[] = $birthday;
 
     $email = filter_var($_POST["txtEmail"], FILTER_SANITIZE_EMAIL, 'UTF-8');
-    $data[] = $email;
+    $dataInfo[] = $email;
+    
+    $dataInfo [] = $genres;
+    $dataInfo [] =$frequency;
+    
+    $dataPick [] = $title;
+    $dataPick [] = $pmkUserId;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
@@ -205,7 +219,7 @@ if (isset($_POST["btnSubmit"])) {
             $query4 .= 'fldLastName = ?, ';
             $query4 .= 'fldBirthDate = ?, ';
             $query4 .= 'fldEmail = ?, ';
-            $query4 .= 'fnkGenre = $fldGenre ';
+            $query4 .= 'fnkGenre = ?, ';
             $query4 .= 'fldFrequency = ? ';
             
             if ($debug) {
@@ -218,8 +232,8 @@ if (isset($_POST["btnSubmit"])) {
                 $query5 = 'INSERT INTO tblUserPicks SET ';
             }    
                         
-            $query5 .= 'fldMoviePick = $fldTitle ,';
-            $query5 .= 'fnkUserId = $pmkUserId ,';
+            $query5 .= 'fldMoviePick = ? ,';
+            $query5 .= 'fnkUserId = ? ';
             
 
                     
@@ -230,13 +244,28 @@ if (isset($_POST["btnSubmit"])) {
 
             if ($update) {
                 $query .= 'WHERE pmkUserId = ?';
-                $data[] = $pmkUserId;
+                $dataInfo[] = $pmkUserId;
                 //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $results = $thisDatabaseWriter->update($query, $data, 1, 0, 0, 0, false, false);
+                $resultsInfo = $thisDatabaseWriter->update($query4, $dataInfo, 1, 0, 0, 0, false, false);
                 // }
             } else {
                 //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $results = $thisDatabaseWriter->insert($query, $data);
+                $resultsInfo = $thisDatabaseWriter->insert($query4, $dataInfo);
+                $primaryKey = $thisDatabaseWriter->lastInsert();
+                if ($debug) {
+                    print "<p>pmk= " . $primaryKey;
+                }
+            }
+            
+            if ($update) {
+                $query .= 'WHERE pmkUserId = ?';
+                $dataPick[] = $pmkUserId;
+                //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                $resultsPick = $thisDatabaseWriter->update($query5, $dataPick, 1, 0, 0, 0, false, false);
+                // }
+            } else {
+                //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                $resultsPick = $thisDatabaseWriter->insert($query5, $dataPick);
                 $primaryKey = $thisDatabaseWriter->lastInsert();
                 if ($debug) {
                     print "<p>pmk= " . $primaryKey;
