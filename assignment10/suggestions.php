@@ -44,13 +44,13 @@ $genres = $results[0]["fnkGenre"];
 $movies = $results[0]['fldTitle'];
 
 // query for genre initialization
-$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies group by fldGenre";
+$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
 //$query1 .= "FROM tblMovies ";
 //$query1 .= "GROUP BY fldGenre ";
 
 // Step Three: code can be in initialize variables or where step four needs to be
 // $buildings is an associative array
-$genres = $thisDatabaseReader->select($query1, "", 0, 1, 0, 0, false, false);
+$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
 
 //query for movie pick initialization 
 $query2 = "SELECT pmkMovieId, fldTitle, fldStatus ";
@@ -201,31 +201,29 @@ if (isset($_POST["btnSubmit"])) {
             } else {
                 $query4 = 'INSERT INTO tblUserInfo SET ';
             }
-
-            if ($debug) {
-                print '<p> before query';
-            }
-
             $query4 .= 'fldFirstName = ?, ';
             $query4 .= 'fldLastName = ?, ';
             $query4 .= 'fldBirthDate = ?, ';
             $query4 .= 'fldEmail = ?, ';
-            $query4 .= 'fnkGenre = ? ';
+            $query4 .= 'fnkGenre = $fldGenre ';
             $query4 .= 'fldFrequency = ? ';
-                    
             
+            if ($debug) {
+                print '<p> before query';
+            }
+
             if ($update) {
                 $query5 = 'UPDATE tblUserPicks SET ';
             } else {
                 $query5 = 'INSERT INTO tblUserPicks SET ';
             }    
                         
-            $query5 .= 'fldMoviePick = fldTitle ,';
-            $query5 .= 'fnkUserId = pmkUserId ,';
-            
-            
+            $query5 .= 'fldMoviePick = $fldTitle ,';
+            $query5 .= 'fnkUserId = $pmkUserId ,';
             
 
+                    
+            
             if ($debug) {
                 print '<p> after query';
             }

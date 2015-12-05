@@ -8,12 +8,9 @@
 
 include "top.php";
 
-$query2 = "SELECT pmkMovieId, fldTitle, fldStatus ";
-$query2 .= "FROM tblMovies ";
-$query2 .= "WHERE fldStatus = 'Upcoming' ";
-$query2 .= "ORDER BY fldTitle";
-$movies = $thisDatabaseReader->testquery($query2, "", 1, 1, 2, 0, false, false);
-$movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
+$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
+$genres = $thisDatabaseReader->testquery($query1, "", 0, 0, 0, 0, false, false);
+$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
  ?>
