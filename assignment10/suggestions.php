@@ -42,9 +42,9 @@ $birthday = $results[0]["fldBirthDate"];
 $email = $results[0]["fldEmail"];
 
 // query for genre initialization
-$query1 = "SELECT DISTINCT fldGenre, pmkMovieId ";
-$query1 .= "FROM tblMovies ";
-$query1 .= "ORDER BY fldGenre ";
+$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies group by fldGenre";
+//$query1 .= "FROM tblMovies ";
+//$query1 .= "GROUP BY fldGenre ";
 
 // Step Three: code can be in initialize variables or where step four needs to be
 // $buildings is an associative array
