@@ -30,7 +30,7 @@ $yourURL = $domain . $phpSelf;
 
 
 
-$query = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail ';
+$query = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
 $query .= 'FROM tblUserInfo '
         . 'WHERE pmkUserId = ?';
 
@@ -40,6 +40,8 @@ $firstName = $results[0]["fldFirstName"];
 $lastName = $results[0]["fldLastName"];
 $birthday = $results[0]["fldBirthDate"];
 $email = $results[0]["fldEmail"];
+$genres = $results[0]["fnkGenre"];
+$movies = $results[0]['fldTitle'];
 
 // query for genre initialization
 $query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies group by fldGenre";
@@ -59,6 +61,8 @@ $query2 .= "ORDER BY fldTitle";
 $movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 
 
+
+
 if ($debug) {
     print '<p> initialize genres';
 } else {
@@ -68,7 +72,8 @@ if ($debug) {
     $birthday = "";
     $email = "";
     $genres = "";
-    $movie = 'Rudderless';
+    $movies = '';
+    $frequency = '';
 }
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
@@ -82,7 +87,8 @@ $lastNameERROR = false;
 $birthdayERROR = false;
 $emailERROR = false;
 $genresERROR = false;
-$movieERROR = false;
+$moviesERROR = false;
+$frequencyERROR = false;
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
@@ -191,21 +197,34 @@ if (isset($_POST["btnSubmit"])) {
             $thisDatabaseWriter->db->beginTransaction();
 
             if ($update) {
-                $query = 'UPDATE tblUserInfo SET ';
+                $query4 = 'UPDATE tblUserInfo SET ';
             } else {
-                $query = 'INSERT INTO tblUserInfo SET ';
+                $query4 = 'INSERT INTO tblUserInfo SET ';
             }
 
             if ($debug) {
                 print '<p> before query';
             }
 
-            $query .= 'fldFirstName = ?, ';
-            $query .= 'fldLastName = ?, ';
-            $query .= 'fldBirthDate = ?, ';
-            $query .= 'fldEmail = ?, ';
-            $query .= 'fldGenres = ? ';
-            $query .= 'fldTitle = ? ';
+            $query4 .= 'fldFirstName = ?, ';
+            $query4 .= 'fldLastName = ?, ';
+            $query4 .= 'fldBirthDate = ?, ';
+            $query4 .= 'fldEmail = ?, ';
+            $query4 .= 'fnkGenre = ? ';
+            $query4 .= 'fldFrequency = ? ';
+                    
+            
+            if ($update) {
+                $query5 = 'UPDATE tblUserPicks SET ';
+            } else {
+                $query5 = 'INSERT INTO tblUserPicks SET ';
+            }    
+                        
+            $query5 .= 'fldMoviePick = fldTitle ,';
+            $query5 .= 'fnkUserId = pmkUserId ,';
+            
+            
+            
 
             if ($debug) {
                 print '<p> after query';
@@ -354,7 +373,9 @@ if ($dataEntered) { // closing of if marked with: end body submit
             <!--            Step Four: prepare output two methods, only do one of them
             
             //  Here is how to code it -->
-    <?php
+    
+<!----------------- -- GENRES ------------------------------------------------>
+                <?php
     $output = array();
     $output[] = '<h2>Genres</h2>';
     $output[] = '<form>';
@@ -377,14 +398,16 @@ if ($dataEntered) { // closing of if marked with: end body submit
 
     print join("\n", $output);
     ?>
+<!----------------- -- END GENRES ------------------------------------------------>
 
+<!----------------- -- MOVIE PICK ------------------------------------------------>
 
-    <label for="fldTitle">Upcoming Movie Pick '<select id="fldTitle" name="fldTitle" tabindex="300">;
+<label for="fldTitle"><h2>Upcoming Movie Pick</h2> <select id="fldTitle" name="fldTitle" tabindex="300">;
 <?php
    foreach ($movies as $row) {
 
    print '<option ';
-    if ($movie == $row["fldTitle"])
+    if ($movies == $row["fldTitle"])
         print " selected= 'selected' ";
     print 'value="' . $row["pmkMovieId"] . '">' . $row["fldTitle"];
 
@@ -394,6 +417,38 @@ if ($dataEntered) { // closing of if marked with: end body submit
             print '</select></label>';
 
     ?>
+ <!----------------- -- END MOVIE PICK------------------------------------------------>
+ 
+ <!----------------- -- EMAIL FREQUENCY ------------------------------------------------>
+ 
+ <fieldset class="radio">
+     <legend><h2>Please indicate your Email Frequency:</h2></legend>
+
+    <label for="radWeekly">
+        <input type="radio" 
+               id="radWeekly" 
+               name="radFrequency" 
+               value="2">Weekly
+    </label>
+
+    <label for="radMonthly">
+        <input type="radio" 
+               id="radMonthly" 
+               name="radFrequency" 
+               value="3">Monthly
+    </label>
+    
+        <label for="radNever">
+        <input type="radio" 
+               id="radNever" 
+               name="radFrequency" 
+               value="4">Never
+    </label>
+
+     <!----------------- -- END EMAIL FREQUENCY ------------------------------------------------>
+</fieldset>
+ 
+ 
 
 
                 <!--// this prints each line as a separate  line in html-->
