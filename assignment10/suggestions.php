@@ -51,12 +51,12 @@ $query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies group by fldGenre";
 $genres = $thisDatabaseReader->select($query1, "", 0, 1, 0, 0, false, false);
 
 //query for movie pick initialization 
-$query2 = "SELECT pmkMovieId, fldTitle ";
+$query2 = "SELECT pmkMovieId, fldTitle, fldStatus ";
 $query2 .= "FROM tblMovies ";
-$query2 .= "WHERE fldMovieStatus == 'Upcoming' ";
+$query2 .= "WHERE fldStatus = 'Upcoming' ";
 $query2 .= "ORDER BY fldTitle";
 
-$movies = $thisDatabaseReader->select($query2, "", 1, 2, 0, 0, false, false);
+$movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 
 
 if ($debug) {
