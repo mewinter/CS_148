@@ -15,8 +15,8 @@ require_once('lib/custom-functions.php');
         <!--[if lt IE 9]>
         <script src="//html5shim.googlecode.com/sin/trunk/html5.js"></script>
         <![endif]-->
-
-        <link rel="stylesheet" href="css/foundation.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="css/base.css" type="text/css" media="screen">
+        <!--<link rel="stylesheet" href="css/newfoundation.css" type="text/css" media="screen">-->
 
         <?php
         $debug = false;

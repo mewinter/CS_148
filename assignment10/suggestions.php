@@ -7,6 +7,14 @@
  */
 
 include "top.php";
+?>
+
+<div id="header">
+<h1>Current Movie Schedule</h1>
+</div>
+
+    <?php
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
@@ -349,11 +357,12 @@ if ($dataEntered) { // closing of if marked with: end body submit
       make it stand out that a mistake happened here.
      */
     ?>
-        <form action="<?php print $phpSelf; ?>"
+<form action="<?php print $phpSelf; ?>"
               method="post"
               id="frmRegister">
-            <fieldset class="wrapper">
-                <legend>User Information</legend>
+            <fieldset>
+                <!--class="wrapper">-->
+                <legend><h2>User Information</h2></legend>
 
                 <input type="hidden" id="hidUserId" name="hidUserId"
                        value="<?php print $pmkUserId; ?>"
@@ -404,10 +413,10 @@ if ($dataEntered) { // closing of if marked with: end body submit
 <!----------------- -- GENRES ------------------------------------------------>
                 <?php
     $output = array();
-    $output[] = '<h2>Genres</h2>';
+//    $output[] = '<h2>Genres</h2>';
     $output[] = '<form>';
     $output[] = '<fieldset class="checkbox">';
-    $output[] = '<legend>Do you like (check all that apply):</legend>';
+    $output[] = '<legend><h2>Which movie genres do you like (check all that apply):</h2></legend>';
 
 //print '<pre>';
 //print_r ($genres);
@@ -429,7 +438,7 @@ if ($dataEntered) { // closing of if marked with: end body submit
 
 <!----------------- -- MOVIE PICK ------------------------------------------------>
 
-<label for="fldTitle"><h2>Upcoming Movie Pick</h2> <select id="fldTitle" name="fldTitle" tabindex="300">;
+<label for="fldTitle"><legend><h2>Upcoming Movie Pick</h2></legend> <select id="fldTitle" name="fldTitle" tabindex="300">;
 <?php
    foreach ($movies as $row) {
 
@@ -486,7 +495,7 @@ if ($dataEntered) { // closing of if marked with: end body submit
                     <input type="submit" id="btnSubmit" name="btnSubmit" value="Save" tabindex="900" class="button">
                 </fieldset> <!-- ends buttons -->
                 </fieldset> <!-- Ends Wrapper -->
-        </form>
+                </form>
     <?php
 } // end body submit
 ?>
