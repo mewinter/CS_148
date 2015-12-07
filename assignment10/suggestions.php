@@ -10,11 +10,10 @@ include "top.php";
 ?>
 
 <div id="header">
-<h1>Current Movie Schedule</h1>
+    <h1>Current Movie Schedule</h1>
 </div>
 
-    <?php
-
+<?php
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
@@ -59,15 +58,13 @@ $frequency = $resultsInfo[0]["fldFrequency"];
 
 $pmkUserId = $resultsPick [0]['fnkUserId'];
 
-// query for genre initialization
-$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
-//$query1 .= "FROM tblMovies ";
-//$query1 .= "GROUP BY fldGenre ";
-
-// Step Three: code can be in initialize variables or where step four needs to be
-// $buildings is an associative array
-$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
-
+//// query for genre initialization
+//$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
+////$query1 .= "FROM tblMovies ";
+////$query1 .= "GROUP BY fldGenre ";
+//// Step Three: code can be in initialize variables or where step four needs to be
+//// $buildings is an associative array
+//$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
 //query for movie pick initialization 
 $query2 = "SELECT pmkMovieId, fldTitle, fldStatus ";
 $query2 .= "FROM tblMovies ";
@@ -87,9 +84,14 @@ if ($debug) {
     $lastName = "";
     $birthday = "";
     $email = "";
-    $genres = "";
+    $action = true;
+    $comedy = false;
+    $drama = false;
+    $romance = false;
+    $adventure = false;
+//    $genres = "";
     $movies = '';
-    $frequency = '';
+    $frequency = 'Weekly';
 }
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
@@ -102,7 +104,13 @@ $firstNameERROR = false;
 $lastNameERROR = false;
 $birthdayERROR = false;
 $emailERROR = false;
-$genresERROR = false;
+$actionERROR = false;
+$comedyERROR = false;
+$dramaERROR = false;
+$romanceERROR = false;
+$adventureERROR = false;
+
+//$genresERROR = false;
 $moviesERROR = false;
 $frequencyERROR = false;
 
@@ -153,12 +161,54 @@ if (isset($_POST["btnSubmit"])) {
 
     $email = filter_var($_POST["txtEmail"], FILTER_SANITIZE_EMAIL, 'UTF-8');
     $dataInfo[] = $email;
+
+//    $genres = filter_var($_POST["chkGenres"], ENT_QUOTES, 'UTF-8');
     
-    $dataInfo [] = $genres;
-    $dataInfo [] =$frequency;
+
+    $genres = array();
+
+    if (isset($_POST["chkAction"])) {
+        $action = true;
+    } else {
+        $action = false;
+    }
+    $genres[] = $action;
+
+    if (isset($_POST["chkComedy"])) {
+        $comedy = true;
+    } else {
+        $comedy = false;
+    }
+    $genres[] = $comedy;
+
+    if (isset($_POST["chkDrama"])) {
+        $drama = true;
+    } else {
+        $drama = false;
+    }
+    $genres[] = $drama;
+
+    if (isset($_POST["chkRomance"])) {
+        $romance = true;
+    } else {
+        $romance = false;
+    }
+    $genres[] = $romance;
+
+    if (isset($_POST["chkAdventure"])) {
+        $adventure = true;
+    } else {
+        $adventure = false;
+    }
+    $genres[] = $adventure;
     
-    $dataPick [] = $title;
-    $dataPick [] = $pmkUserId;
+    $dataInfo[] = $genres;
+
+    $frequency = filter_var($_POST["radFrequency"], ENT_QUOTES, 'UTF-8');
+    $dataInfo[] = $frequency;
+
+    $title = filter_var($_POST["txtTitle"], ENT_QUOTES, 'UTF-8');
+    $dataInfo[] = $title;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
@@ -229,7 +279,7 @@ if (isset($_POST["btnSubmit"])) {
             $query4 .= 'fldEmail = ?, ';
             $query4 .= 'fnkGenre = ?, ';
             $query4 .= 'fldFrequency = ? ';
-            
+
             if ($debug) {
                 print '<p> before query';
             }
@@ -238,14 +288,14 @@ if (isset($_POST["btnSubmit"])) {
                 $query5 = 'UPDATE tblUserPicks SET ';
             } else {
                 $query5 = 'INSERT INTO tblUserPicks SET ';
-            }    
-                        
+            }
+
             $query5 .= 'fldMoviePick = ? ,';
             $query5 .= 'fnkUserId = ? ';
-            
 
-                    
-            
+
+
+
             if ($debug) {
                 print '<p> after query';
             }
@@ -264,7 +314,7 @@ if (isset($_POST["btnSubmit"])) {
                     print "<p>pmk= " . $primaryKey;
                 }
             }
-            
+
             if ($update) {
                 $query .= 'WHERE pmkUserId = ?';
                 $dataPick[] = $pmkUserId;
@@ -312,7 +362,7 @@ if ($debug) {
 //
 ?>
 <article id="main">
-<?php
+    <?php
 //####################################
 //
 // SECTION 3a.
@@ -322,42 +372,42 @@ if ($debug) {
 //
 // If its the first time coming to the form or there are errors we are going
 // to display the form.
-if ($dataEntered) { // closing of if marked with: end body submit
-    print "<h1>Record Saved</h1> ";
-} else {
+    if ($dataEntered) { // closing of if marked with: end body submit
+        print "<h1>Record Saved</h1> ";
+    } else {
 //####################################
 //
 // SECTION 3b Error Messages
 //
 // display any error messages before we print out the form
-    if ($errorMsg) {
-        print '<div id="errors">';
-        print '<h1>Your form has the following mistakes</h1>';
+        if ($errorMsg) {
+            print '<div id="errors">';
+            print '<h1>Your form has the following mistakes</h1>';
 
-        print "<ol>\n";
-        foreach ($errorMsg as $err) {
-            print "<li>" . $err . "</li>\n";
+            print "<ol>\n";
+            foreach ($errorMsg as $err) {
+                print "<li>" . $err . "</li>\n";
+            }
+            print "</ol>\n";
+            print '</div>';
         }
-        print "</ol>\n";
-        print '</div>';
-    }
 //####################################
 //
 // SECTION 3c html Form
 //
-    /* Display the HTML form. note that the action is to this same page. $phpSelf
-      is defined in top.php
-      NOTE the line:
-      value="<?php print $email; ?>
-      this makes the form sticky by displaying either the initial default value (line 35)
-      or the value they typed in (line 84)
-      NOTE this line:
-      <?php if($emailERROR) print 'class="mistake"'; ?>
-      this prints out a css class so that we can highlight the background etc. to
-      make it stand out that a mistake happened here.
-     */
-    ?>
-<form action="<?php print $phpSelf; ?>"
+        /* Display the HTML form. note that the action is to this same page. $phpSelf
+          is defined in top.php
+          NOTE the line:
+          value="<?php print $email; ?>
+          this makes the form sticky by displaying either the initial default value (line 35)
+          or the value they typed in (line 84)
+          NOTE this line:
+          <?php if($emailERROR) print 'class="mistake"'; ?>
+          this prints out a css class so that we can highlight the background etc. to
+          make it stand out that a mistake happened here.
+         */
+        ?>
+        <form action="<?php print $phpSelf; ?>"
               method="post"
               id="frmRegister">
             <fieldset>
@@ -372,7 +422,7 @@ if ($dataEntered) { // closing of if marked with: end body submit
                     <input type="text" id="txtFirstName" name="txtFirstName"
                            value="<?php print $firstName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your first name"
-    <?php if ($firstNameERROR) print 'class="mistake"'; ?>
+                           <?php if ($firstNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            autofocus>
                 </label>
@@ -381,7 +431,7 @@ if ($dataEntered) { // closing of if marked with: end body submit
                     <input type="text" id="txtLastName" name="txtLastName"
                            value="<?php print $lastName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your last name"
-    <?php if ($lastNameERROR) print 'class="mistake"'; ?>
+                           <?php if ($lastNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>
@@ -390,7 +440,7 @@ if ($dataEntered) { // closing of if marked with: end body submit
                     <input type="text" id="txtBirthday" name="txtBirthday"
                            value="<?php print $birthday; ?>"
                            tabindex="100" maxlength="45" placeholder="YYYY-MM-DD"
-    <?php if ($birthdayERROR) print 'class="mistake"'; ?>
+                           <?php if ($birthdayERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>  
@@ -399,107 +449,140 @@ if ($dataEntered) { // closing of if marked with: end body submit
                     <input type="text" id="txtEmail" name="txtEmail"
                            value="<?php print $email; ?>"
                            tabindex="120" maxlength="45" placeholder="Enter a valid email address"
-    <?php if ($emailERROR) print 'class="mistake"'; ?>
+                           <?php if ($emailERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()" 
                            autofocus>
                 </label>
 
 
             </fieldset> <!-- ends contact -->
+
+
+            <fieldset class="checkbox">
+                <legend>Which movie genres do you like (check all that apply):</legend>
+                <label><input type="checkbox" 
+                              id="chkAction" 
+                              name="chkAction" 
+                              value="Action"
+                              <?php if ($action) print ' checked '; ?>
+                              tabindex="180"> Action</label>
+                <label><input type="checkbox" 
+                              id="chkComedy" 
+                              name="chkComedy" 
+                              value="Comedy"
+                              <?php if ($comedy) print ' checked '; ?>
+                              tabindex="190"> Comedy</label>
+                <label><input type="checkbox" 
+                              id="chkDrama" 
+                              name="chkDrama" 
+                              value="Drama"
+                              <?php if ($drama) print ' checked '; ?>
+                              tabindex="200"> Drama</label>
+                <label><input type="checkbox" 
+                              id="chkRomance" 
+                              name="chkRomance" 
+                              value="Romance"
+                              <?php if ($romance) print ' checked '; ?>
+                              tabindex="210"> Romance</label> 
+                <label><input type="checkbox" 
+                              id="chkAdventure" 
+                              name="chkAdventure" 
+                              value="Adventure"
+                              <?php if ($Adventure) print ' checked '; ?>
+                              tabindex="220"> Adventure</label>
+            </fieldset> <!-- ends wrapper Two -->
             <!--            Step Four: prepare output two methods, only do one of them
             
             //  Here is how to code it -->
-    
-<!----------------- -- GENRES ------------------------------------------------>
-                <?php
-    $output = array();
-//    $output[] = '<h2>Genres</h2>';
-    $output[] = '<form>';
-    $output[] = '<fieldset class="checkbox">';
-    $output[] = '<legend><h2>Which movie genres do you like (check all that apply):</h2></legend>';
 
+            <!----------------- -- GENRES ------------------------------------------------>
+            <?php
+//            $output = array();
+//    $output[] = '<h2>Genres</h2>';
+//            $output[] = '<form>';
+//            $output[] = '<fieldset class="checkbox">';
+//            $output[] = '<legend><h2>Which movie genres do you like (check all that apply):</h2></legend>';
 //print '<pre>';
 //print_r ($genres);
+//            foreach ($genres as $row) {
+//
+//                $output[] = '<label for="chk' . str_replace(" ", "-", $row["fldGenre"]) . '"><input type="checkbox" ';
+//                $output[] = ' id="chk' . str_replace(" ", "-", $row["fldGenre"]) . '" ';
+//                $output[] = ' name="chk' . str_replace(" ", "-", $row["fldGenre"]) . '" ';
+//                $output[] = 'value="' . $row["pmkMovieId"] . '">' . $row["fldGenre"];
+//                $output[] = '</label>';
+//            }
+//
+//            $output[] = '</fieldset>';
+//
+//            print join("\n", $output);
+//            
+            ?>
+            <!----------------- -- END GENRES ------------------------------------------------>
 
-    foreach ($genres as $row) {
+            <!----------------- -- MOVIE PICK ------------------------------------------------>
 
-        $output[] = '<label for="chk' . str_replace(" ", "-", $row["fldGenre"]) . '"><input type="checkbox" ';
-        $output[] = ' id="chk' . str_replace(" ", "-", $row["fldGenre"]) . '" ';
-        $output[] = ' name="chk' . str_replace(" ", "-", $row["fldGenre"]) . '" ';
-        $output[] = 'value="' . $row["pmkMovieId"] . '">' . $row["fldGenre"];
-        $output[] = '</label>';
+            <label for="fldTitle"><legend><h2>Upcoming Movie Pick</h2></legend> <select id="fldTitle" name="fldTitle" tabindex="300">;
+    <?php
+    foreach ($movies as $row) {
+
+        print '<option ';
+        if ($movies == $row["fldTitle"])
+            print " selected= 'selected' ";
+        print 'value="' . $row["pmkMovieId"] . '">' . $row["fldTitle"];
+
+        print '</option>';
     }
 
-    $output[] = '</fieldset>';
-
-    print join("\n", $output);
+    print '</select></label>';
     ?>
-<!----------------- -- END GENRES ------------------------------------------------>
+                    <!----------------- -- END MOVIE PICK------------------------------------------------>
 
-<!----------------- -- MOVIE PICK ------------------------------------------------>
+                    <!----------------- -- EMAIL FREQUENCY ------------------------------------------------>
 
-<label for="fldTitle"><legend><h2>Upcoming Movie Pick</h2></legend> <select id="fldTitle" name="fldTitle" tabindex="300">;
-<?php
-   foreach ($movies as $row) {
+                    <fieldset class="radio">
+                        <legend><h2>Please indicate your Email Frequency:</h2></legend>
 
-   print '<option ';
-    if ($movies == $row["fldTitle"])
-        print " selected= 'selected' ";
-    print 'value="' . $row["pmkMovieId"] . '">' . $row["fldTitle"];
+                        <label for="radWeekly">
+                            <input type="radio" 
+                                   id="radWeekly" 
+                                   name="radFrequency" 
+                                   value="2">Weekly
+                        </label>
 
-    print '</option>';
-    }
+                        <label for="radMonthly">
+                            <input type="radio" 
+                                   id="radMonthly" 
+                                   name="radFrequency" 
+                                   value="3">Monthly
+                        </label>
 
-            print '</select></label>';
+                        <label for="radNever">
+                            <input type="radio" 
+                                   id="radNever" 
+                                   name="radFrequency" 
+                                   value="4">Never
+                        </label>
 
-    ?>
- <!----------------- -- END MOVIE PICK------------------------------------------------>
- 
- <!----------------- -- EMAIL FREQUENCY ------------------------------------------------>
- 
- <fieldset class="radio">
-     <legend><h2>Please indicate your Email Frequency:</h2></legend>
-
-    <label for="radWeekly">
-        <input type="radio" 
-               id="radWeekly" 
-               name="radFrequency" 
-               value="2">Weekly
-    </label>
-
-    <label for="radMonthly">
-        <input type="radio" 
-               id="radMonthly" 
-               name="radFrequency" 
-               value="3">Monthly
-    </label>
-    
-        <label for="radNever">
-        <input type="radio" 
-               id="radNever" 
-               name="radFrequency" 
-               value="4">Never
-    </label>
-
-     <!----------------- -- END EMAIL FREQUENCY ------------------------------------------------>
-</fieldset>
- 
- 
+                        <!----------------- -- END EMAIL FREQUENCY ------------------------------------------------>
+                    </fieldset>
 
 
-                <!--// this prints each line as a separate  line in html-->
 
-                </fieldset> <!-- ends wrapper Two -->
-                <fieldset class="buttons">
-                    <legend></legend>
-                    <input type="submit" id="btnSubmit" name="btnSubmit" value="Save" tabindex="900" class="button">
-                </fieldset> <!-- ends buttons -->
-                </fieldset> <!-- Ends Wrapper -->
-                </form>
+
+                    <!--// this prints each line as a separate  line in html-->
+
+                    </fieldset> <!-- ends wrapper Two -->
+                    <fieldset class="buttons">
+                        <legend></legend>
+                        <input type="submit" id="btnSubmit" name="btnSubmit" value="Save" tabindex="900" class="button">
+                    </fieldset> <!-- ends buttons -->
+                    </fieldset> <!-- Ends Wrapper -->
+                    </form>
     <?php
 } // end body submit
 ?>
-</article>
+                </article>
 
 <?php
 include "footer.php";
