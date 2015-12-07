@@ -50,7 +50,7 @@ $firstName = $resultsInfo[0]["fldFirstName"];
 $lastName = $resultsInfo[0]["fldLastName"];
 $birthday = $resultsInfo[0]["fldBirthDate"];
 $email = $resultsInfo[0]["fldEmail"];
-$genres = $resultsInfo[0]["fnkGenre"];
+$genresList = $resultsInfo[0]["fnkGenre"];
 
 $movies = $resultsPick[0]['fldTitle'];
 
@@ -77,9 +77,9 @@ $movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 
 
 if ($debug) {
-    print '<p> initialize genres';
+    print '<p> initialize genres</p>';
 } else {
-    $pmkUserId = -1;
+    $pmkUserId = '';
     $firstName = "";
     $lastName = "";
     $birthday = "";
@@ -144,10 +144,9 @@ if (isset($_POST["btnSubmit"])) {
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
 
-    $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
-    if ($pmkUserId > 0) {
-        $update = true;
-    }
+    $pmkUserId = htmlentities($_SERVER["REMOTE_USER"], ENT_QUOTES, "UTF-8");
+    $dataInfo[] = $pmkUserId;
+    print $pmkUserId;
     // I am not putting the ID in the $data array at this time
 
     $firstName = htmlentities($_POST["txtFirstName"], ENT_QUOTES, "UTF-8");
@@ -163,52 +162,53 @@ if (isset($_POST["btnSubmit"])) {
     $dataInfo[] = $email;
 
 //    $genres = filter_var($_POST["chkGenres"], ENT_QUOTES, 'UTF-8');
-    
-
-    $genres = array();
 
     if (isset($_POST["chkAction"])) {
-        $action = true;
+        $chkAction = 'Action';
     } else {
-        $action = false;
+        $chkAction = '';
     }
-    $genres[] = $action;
 
     if (isset($_POST["chkComedy"])) {
-        $comedy = true;
+        $chkComedy = 'Comedy';
     } else {
-        $comedy = false;
+        $chkComedy = '';
     }
-    $genres[] = $comedy;
 
     if (isset($_POST["chkDrama"])) {
-        $drama = true;
+        $chkDrama = 'Drama';
     } else {
-        $drama = false;
+        $chkDrama = '';
     }
-    $genres[] = $drama;
 
     if (isset($_POST["chkRomance"])) {
-        $romance = true;
+        $chkRomance = 'Romance';
     } else {
-        $romance = false;
+        $chkRomance = '';
     }
-    $genres[] = $romance;
 
     if (isset($_POST["chkAdventure"])) {
-        $adventure = true;
+        $chkAdventure = 'Adventure';
     } else {
-        $adventure = false;
+        $chkAdventure = '';
     }
-    $genres[] = $adventure;
-    
+
+    $genres = $chkAction;
+    $genres .= $chkComedy;
+    $genres .= $chkDrama;
+    $genres .= $chkRomance;
+    $genres .= $chkAdventure;
+
+    print $genres;
     $dataInfo[] = $genres;
+
+    $title = filter_var($_POST["txtTitle"], ENT_QUOTES, 'UTF-8');
+    $dataPick[] = $title;
 
     $frequency = filter_var($_POST["radFrequency"], ENT_QUOTES, 'UTF-8');
     $dataInfo[] = $frequency;
 
-    $title = filter_var($_POST["txtTitle"], ENT_QUOTES, 'UTF-8');
-    $dataInfo[] = $title;
+
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
@@ -268,79 +268,27 @@ if (isset($_POST["btnSubmit"])) {
         try {
             $thisDatabaseWriter->db->beginTransaction();
 
-            if ($update) {
-                $query4 = 'UPDATE tblUserInfo SET ';
-            } else {
-                $query4 = 'INSERT INTO tblUserInfo SET ';
-            }
-            $query4 .= 'fldFirstName = ?, ';
-            $query4 .= 'fldLastName = ?, ';
-            $query4 .= 'fldBirthDate = ?, ';
-            $query4 .= 'fldEmail = ?, ';
-            $query4 .= 'fnkGenre = ?, ';
-            $query4 .= 'fldFrequency = ? ';
+            $queryInfo = 'INSERT INTO tblUserInfo SET fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
+                    . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ? ';
 
+            //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+            $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
+            $primaryKey = $thisDatabaseWriter->lastInsert();
             if ($debug) {
-                print '<p> before query';
+                print "<p>pmk= " . $primaryKey;
             }
 
-            if ($update) {
-                $query5 = 'UPDATE tblUserPicks SET ';
-            } else {
-                $query5 = 'INSERT INTO tblUserPicks SET ';
-            }
+            $queryPick = 'INSERT INTO tblUserPicks SET ';
+            $queryPick .= 'fldMoviePick = ? ,';
+            $queryPick .= 'fnkUserId = ? ';
 
-            $query5 .= 'fldMoviePick = ? ,';
-            $query5 .= 'fnkUserId = ? ';
-
-
-
-
+            $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
+            $primaryKey = $thisDatabaseWriter->lastInsert();
             if ($debug) {
-                print '<p> after query';
+                print "<p>pmk= " . $primaryKey;
             }
-
-            if ($update) {
-                $query .= 'WHERE pmkUserId = ?';
-                $dataInfo[] = $pmkUserId;
-                //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $resultsInfo = $thisDatabaseWriter->update($query4, $dataInfo, 1, 0, 0, 0, false, false);
-                // }
-            } else {
-                //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $resultsInfo = $thisDatabaseWriter->insert($query4, $dataInfo);
-                $primaryKey = $thisDatabaseWriter->lastInsert();
-                if ($debug) {
-                    print "<p>pmk= " . $primaryKey;
-                }
-            }
-
-            if ($update) {
-                $query .= 'WHERE pmkUserId = ?';
-                $dataPick[] = $pmkUserId;
-                //if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $resultsPick = $thisDatabaseWriter->update($query5, $dataPick, 1, 0, 0, 0, false, false);
-                // }
-            } else {
-                //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                $resultsPick = $thisDatabaseWriter->insert($query5, $dataPick);
-                $primaryKey = $thisDatabaseWriter->lastInsert();
-                if ($debug) {
-                    print "<p>pmk= " . $primaryKey;
-                }
-            }
-//               }
-
-            if ($debug) {
-                print '<p> update';
-            }
-
-            // all sql statements are done so lets commit to our changes
-            //if($_SERVER["REMOTE_USER"]=='rerickso'){
             $dataEntered = $thisDatabaseWriter->db->commit();
-            // }else{
-            //     $thisDatabase->db->rollback();
-            // }
+
             if ($debug)
                 print "<p>transaction complete ";
         } catch (PDOExecption $e) {
@@ -349,64 +297,94 @@ if (isset($_POST["btnSubmit"])) {
                 print "Error!: " . $e->getMessage() . "</br>";
             $errorMsg[] = "There was a problem with accpeting your data please contact us directly.";
         }
+
+        $message = '<h2>Here is the information you submitted:</h2>';
+
+        foreach ($_POST as $key => $value) {
+            $message .= "<p>";
+            $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
+            foreach ($camelCase as $one) {
+                $message .= $one . " ";
+            }
+            $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
+        }
+          //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        //
+        // SECTION: 2g Mail to user
+        //
+        // Process for mailing a message which contains the forms data
+        // the message was built in section 2f.
+        $to = $email; // the person who filled out the form
+        $cc = "";
+        $bcc = "";
+        $from = "MoviePix <contact@movies.com>";
+
+        // subject of mail should make sense to your form
+        $todaysDate = strftime("%x");
+        $subject = "Learn more about MoviePix: " . $todaysDate;
+
+        $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
+        
     } // end form is valid
 } // ends if form was submitted.
-if ($debug) {
-    print '<p> Form submitted';
-    print "<p>Section 3</p>";
-}
-
 //#############################################################################
 //
 // SECTION 3 Display Form
 //
 ?>
 <article id="main">
-    <?php
+<?php
 //####################################
-//
 // SECTION 3a.
-//
-//
-//
-//
 // If its the first time coming to the form or there are errors we are going
 // to display the form.
-    if ($dataEntered) { // closing of if marked with: end body submit
-        print "<h1>Record Saved</h1> ";
+    if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked with: end body submit
+        print "<h1>Your Request has ";
+        if (!$mailed) {
+            print "not ";
+        }
+        print "been processed</h1>";
+        print "<p>A copy of this message has ";
+        if (!$mailed) {
+            print "not ";
+        }
+        print "been sent</p>";
+        print "<p>To: " . $email . "</p>";
+        print "<p>Mail Message:</p>";
+        print $message;
     } else {
 //####################################
 //
 // SECTION 3b Error Messages
 //
 // display any error messages before we print out the form
-        if ($errorMsg) {
-            print '<div id="errors">';
-            print '<h1>Your form has the following mistakes</h1>';
+    if ($errorMsg) {
+        print '<div id="errors">';
+        print '<h1>Your form has the following mistakes</h1>';
 
-            print "<ol>\n";
-            foreach ($errorMsg as $err) {
-                print "<li>" . $err . "</li>\n";
-            }
-            print "</ol>\n";
-            print '</div>';
+        print "<ol>\n";
+        foreach ($errorMsg as $err) {
+            print "<li>" . $err . "</li>\n";
         }
+        print "</ol>\n";
+        print '</div>';
+    }
 //####################################
 //
 // SECTION 3c html Form
 //
-        /* Display the HTML form. note that the action is to this same page. $phpSelf
-          is defined in top.php
-          NOTE the line:
-          value="<?php print $email; ?>
-          this makes the form sticky by displaying either the initial default value (line 35)
-          or the value they typed in (line 84)
-          NOTE this line:
-          <?php if($emailERROR) print 'class="mistake"'; ?>
-          this prints out a css class so that we can highlight the background etc. to
-          make it stand out that a mistake happened here.
-         */
-        ?>
+    /* Display the HTML form. note that the action is to this same page. $phpSelf
+      is defined in top.php
+      NOTE the line:
+      value="<?php print $email; ?>
+      this makes the form sticky by displaying either the initial default value (line 35)
+      or the value they typed in (line 84)
+      NOTE this line:
+      <?php if($emailERROR) print 'class="mistake"'; ?>
+      this prints out a css class so that we can highlight the background etc. to
+      make it stand out that a mistake happened here.
+     */
+    ?>
         <form action="<?php print $phpSelf; ?>"
               method="post"
               id="frmRegister">
@@ -422,7 +400,7 @@ if ($debug) {
                     <input type="text" id="txtFirstName" name="txtFirstName"
                            value="<?php print $firstName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your first name"
-                           <?php if ($firstNameERROR) print 'class="mistake"'; ?>
+    <?php if ($firstNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            autofocus>
                 </label>
@@ -431,7 +409,7 @@ if ($debug) {
                     <input type="text" id="txtLastName" name="txtLastName"
                            value="<?php print $lastName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your last name"
-                           <?php if ($lastNameERROR) print 'class="mistake"'; ?>
+    <?php if ($lastNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>
@@ -440,7 +418,7 @@ if ($debug) {
                     <input type="text" id="txtBirthday" name="txtBirthday"
                            value="<?php print $birthday; ?>"
                            tabindex="100" maxlength="45" placeholder="YYYY-MM-DD"
-                           <?php if ($birthdayERROR) print 'class="mistake"'; ?>
+    <?php if ($birthdayERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>  
@@ -449,7 +427,7 @@ if ($debug) {
                     <input type="text" id="txtEmail" name="txtEmail"
                            value="<?php print $email; ?>"
                            tabindex="120" maxlength="45" placeholder="Enter a valid email address"
-                           <?php if ($emailERROR) print 'class="mistake"'; ?>
+    <?php if ($emailERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()" 
                            autofocus>
                 </label>
@@ -464,61 +442,33 @@ if ($debug) {
                               id="chkAction" 
                               name="chkAction" 
                               value="Action"
-                              <?php if ($action) print ' checked '; ?>
+    <?php if ($action) print ' checked '; ?>
                               tabindex="180"> Action</label>
                 <label><input type="checkbox" 
                               id="chkComedy" 
                               name="chkComedy" 
                               value="Comedy"
-                              <?php if ($comedy) print ' checked '; ?>
+    <?php if ($comedy) print ' checked '; ?>
                               tabindex="190"> Comedy</label>
                 <label><input type="checkbox" 
                               id="chkDrama" 
                               name="chkDrama" 
                               value="Drama"
-                              <?php if ($drama) print ' checked '; ?>
+    <?php if ($drama) print ' checked '; ?>
                               tabindex="200"> Drama</label>
                 <label><input type="checkbox" 
                               id="chkRomance" 
                               name="chkRomance" 
                               value="Romance"
-                              <?php if ($romance) print ' checked '; ?>
+    <?php if ($romance) print ' checked '; ?>
                               tabindex="210"> Romance</label> 
                 <label><input type="checkbox" 
                               id="chkAdventure" 
                               name="chkAdventure" 
                               value="Adventure"
-                              <?php if ($Adventure) print ' checked '; ?>
+    <?php if ($Adventure) print ' checked '; ?>
                               tabindex="220"> Adventure</label>
             </fieldset> <!-- ends wrapper Two -->
-            <!--            Step Four: prepare output two methods, only do one of them
-            
-            //  Here is how to code it -->
-
-            <!----------------- -- GENRES ------------------------------------------------>
-            <?php
-//            $output = array();
-//    $output[] = '<h2>Genres</h2>';
-//            $output[] = '<form>';
-//            $output[] = '<fieldset class="checkbox">';
-//            $output[] = '<legend><h2>Which movie genres do you like (check all that apply):</h2></legend>';
-//print '<pre>';
-//print_r ($genres);
-//            foreach ($genres as $row) {
-//
-//                $output[] = '<label for="chk' . str_replace(" ", "-", $row["fldGenre"]) . '"><input type="checkbox" ';
-//                $output[] = ' id="chk' . str_replace(" ", "-", $row["fldGenre"]) . '" ';
-//                $output[] = ' name="chk' . str_replace(" ", "-", $row["fldGenre"]) . '" ';
-//                $output[] = 'value="' . $row["pmkMovieId"] . '">' . $row["fldGenre"];
-//                $output[] = '</label>';
-//            }
-//
-//            $output[] = '</fieldset>';
-//
-//            print join("\n", $output);
-//            
-            ?>
-            <!----------------- -- END GENRES ------------------------------------------------>
 
             <!----------------- -- MOVIE PICK ------------------------------------------------>
 
@@ -529,7 +479,7 @@ if ($debug) {
         print '<option ';
         if ($movies == $row["fldTitle"])
             print " selected= 'selected' ";
-        print 'value="' . $row["pmkMovieId"] . '">' . $row["fldTitle"];
+        print 'value= "fldTitle">' . $row["fldTitle"];
 
         print '</option>';
     }
@@ -547,30 +497,26 @@ if ($debug) {
                             <input type="radio" 
                                    id="radWeekly" 
                                    name="radFrequency" 
-                                   value="2">Weekly
+                                   value="Weekly">Weekly
                         </label>
 
                         <label for="radMonthly">
                             <input type="radio" 
                                    id="radMonthly" 
                                    name="radFrequency" 
-                                   value="3">Monthly
+                                   value="Monthly">Monthly
                         </label>
 
                         <label for="radNever">
                             <input type="radio" 
                                    id="radNever" 
                                    name="radFrequency" 
-                                   value="4">Never
+                                   value="Never">Never
                         </label>
 
                         <!----------------- -- END EMAIL FREQUENCY ------------------------------------------------>
                     </fieldset>
 
-
-
-
-                    <!--// this prints each line as a separate  line in html-->
 
                     </fieldset> <!-- ends wrapper Two -->
                     <fieldset class="buttons">
@@ -584,8 +530,8 @@ if ($debug) {
 ?>
                 </article>
 
-<?php
-include "footer.php";
-if ($debug)
-    print "<p>END OF PROCESSING</p>";
-?>
+                <?php
+                include "footer.php";
+                if ($debug)
+                    print "<p>END OF PROCESSING</p>";
+                ?>
