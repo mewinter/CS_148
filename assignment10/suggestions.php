@@ -145,6 +145,7 @@ if (isset($_POST["btnSubmit"])) {
 
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $pmkUserId;
+    $dataPick[]= $pmkUserId;
     print $pmkUserId;
     // I am not putting the ID in the $data array at this time
 
@@ -278,10 +279,11 @@ if (isset($_POST["btnSubmit"])) {
             }
 
             $queryPick = 'INSERT INTO tblUserPicks SET ';
-            $queryPick .= 'fldMoviePick = ? ,';
-            $queryPick .= 'fnkUserId = pmkUserId ';
+            $queryPick .= 'fnkUserId = ? ,';
+            $queryPick .= 'fldMoviePick = ? ';
+            
 
-            $dataPick[] = $primaryKey;
+           // $dataPick[] = $primaryKey;
 
             $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
             // delete this line, i dont think you need it (85% sure anyway) $primaryKey = $thisDatabaseWriter->lastInsert();
