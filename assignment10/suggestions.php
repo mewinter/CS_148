@@ -93,6 +93,7 @@ if ($debug) {
 //
 // Initialize Error Flags one for each form element we validate
 // in the order they appear in section 1c.
+$pmkUserIdERROR= false;
 $firstNameERROR = false;
 $lastNameERROR = false;
 $birthdayERROR = false;
@@ -139,7 +140,7 @@ if (isset($_POST["btnSubmit"])) {
 
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $pmkUserId;
-    $dataPick[] = $pmkUserId;
+    
     print $pmkUserId;
     // I am not putting the ID in the $data array at this time
 
@@ -273,10 +274,12 @@ print '<p>test ' . $frequency;
             }
 
             $queryPick = 'INSERT INTO tblUserPicks SET ';
-            $queryPick .= 'fnkUserId = ? ,';
-            $queryPick .= 'fldMoviePick = ? ';
-            // $dataPick[] = $primaryKey;
+            $queryPick .= 'fldMoviePick = ? ,';
+            $queryPick .= 'fnkUserId = ?';
 
+             $dataPick[] = $pmkUserId;
+print "<p> type seo <pre>";
+print_r ($dataPick);
             $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
             // delete this line, i dont think you need it (85% sure anyway) $primaryKey = $thisDatabaseWriter->lastInsert();
 //            $queryPick = 'INSERT INTO tblUserPicks SET ';
