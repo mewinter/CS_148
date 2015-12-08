@@ -33,8 +33,8 @@ if ($debug)
     print "<p>DEBUG MODE IS ON</p>";
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 
-$adminEmail = "mewinter@uvm.edu";
-$message = "<p>I am sorry but this project cannot be confrimed at this time. Please call (802) 656-1234 for help in resolving this matter.</p>";
+$adminEmail = "mpalmer5@uvm.edu";
+$message = "<p>I am sorry but this project cannot be confrimed at this time.</p>";
 
 
 //##############################################################
@@ -51,8 +51,8 @@ if (isset($_GET["q"])) {
     //##############################################################
     // get the membership record 
 
-    $query = "SELECT fldDateJoined, fldEmail FROM tblRegister WHERE pkRegisterId = ? ";
-    $results = $thisDatabase->select($query, $data);
+    $query = "SELECT fldDateJoined, fldEmail FROM tblUserInfo WHERE pmkUserId = ? ";
+    $results = $thisDatabaseReader->select($query, $data);
 
     $dateSubmitted = $results[0]["fldDateJoined"];
     $email = $results[0]["fldEmail"];
@@ -74,8 +74,8 @@ if (isset($_GET["q"])) {
         if ($debug)
             print "<h1>Confirmed</h1>";
 
-        $query = "UPDATE tblRegister set fldConfirmed=1 WHERE pkRegisterId = ? ";
-        $results = $thisDatabase->update($query, $data);
+        $query = "UPDATE tblUserInfo set fldConfirmed=1 WHERE pmkUserId = ? ";
+        $results = $thisDatabaseWriter->update($query, $data);
 
         if ($debug) {
             print "<p>Query: " . $query;
@@ -98,8 +98,8 @@ if (isset($_GET["q"])) {
         $to = $adminEmail;
         $cc = "";
         $bcc = "";
-        $from = "WRONG site <noreply@yoursite.com>";
-        $subject = "Movie Mailing Confirmed: Approve?";
+        $from = "DigiPix <noreply@yoursite.com>";
+        $subject = "New DigiPix membership Confirmed: Approve?";
 
         $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
 
@@ -115,9 +115,9 @@ if (isset($_GET["q"])) {
         $to = $email;
         $cc = "";
         $bcc = "";
-        $from = "WRONG site <noreply@yoursite.com>";
-        $subject = "Bobs PLH Registration Confirmed";
-        $message = "<p>Thank you for taking the time to confirm your registration. Once your membership has been approved we look forward to sending you junk mail. Grader please mark me wrong for not changing this.</p>";
+        $from = "DigiPix <noreply@yoursite.com>";
+        $subject = "Registration Confirmed";
+        $message = "<p>Thank you for taking the time to confirm your registration.</p>";
 
         $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
 

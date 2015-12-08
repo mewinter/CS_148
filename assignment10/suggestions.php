@@ -20,8 +20,19 @@ include "top.php";
 $debug = true;
 $update = false;
 
-// SECTION: 1a.
-//%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
+// SECTION: 1e misc variables
+//
+// create array to hold error messages filled (if any) in 2d displayed in 3c.
+$errorMsg = array();
+$data = array();
+$dataEntered = false;
+
+$mailed = false;
+$messageA = "";
+$messageB = "";
+$messageC = "";
+
+//@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 1b Security
 //
@@ -307,35 +318,93 @@ if (isset($_POST["btnSubmit"])) {
                 print "Error!: " . $e->getMessage() . "</br>";
             $errorMsg[] = "There was a problem with accpeting your data please contact us directly.";
         }
-
-        $message = '<h2>Here is the information you submitted:</h2>';
-
-        foreach ($_POST as $key => $value) {
-            $message .= "<p>";
-            $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
-            foreach ($camelCase as $one) {
-                $message .= $one . " ";
+//
+if ($dataEntered) {
+            if ($debug)
+                print "<p>data entered now prepare keys ";
+        
+        $query = "SELECT fldDateJoined FROM tblUserInfo WHERE pmkUserId=" . $primaryKey;
+           
+            $results = $thisDatabaseReader->select($query);
+            print "<p>1";
+            $dateSubmitted = $results[0]["fldDateJoined"];
+            print "<p>2";
+            $key1 = sha1($dateSubmitted);
+            $key2 = $primaryKey;
+            if ($debug)
+                print "<p>key 1: " . $key1;
+            if ($debug)
+                print "<p>key 2: " . $key2;
+            print '<p> selct thing works</p>';
+            //#################################################################
+            //
+            //Put forms information into a variable to print on the screen
+            //
+            //$messageD = '<h2>Here is the information you submitted:</h2>';
+            $message = '<h2>Here is the information you submitted:</h2>';
+            foreach ($_POST as $key => $value) {
+                $message .= "<p>";
+                $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
+                foreach ($camelCase as $one) {
+                    $message .= $one . " ";
+                }
+                $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
             }
-            $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
-        }
+            $messageA = '<h2>Thank you for registering.</h2>';
+            $messageB = "<p>Click this link to confirm your registration: ";
+            $messageB .= '<a href="' . $domain . $path_parts["dirname"] . '/confirmation.php?q=' . $key1 . '&amp;w=' . $key2 . '">Confirm Registration</a></p>';
+            $messageB .= "<p>or copy and paste this url into a web browser: ";
+            $messageB .= $domain . $path_parts["dirname"] . '/confirmation.php?q=' . $key1 . '&amp;w=' . $key2 . "</p>";
+            $messageC .= "<p><b>Email Address:</b><i>   " . $email . "</i></p>";
+            //##############################################################
+            //
+            // email the form's information
+            //
+            $to = $email; // the person who filled out the form
+            $cc = "";
+            $bcc = "";
+            $from = "DigiPix <noreply@yoursite.com>";
+            $subject = "Confirm email for DigiPix";
+            $mailed = sendMail($to, $cc, $bcc, $from, $subject, $messageA . $messageB . $messageC . $message);
+        } //data entered  
+        print'<p>data mailed</p>';
+    } // end form is valid
+} // ends if form was submitted.
+if ($debug) {
+    print '<p> Form submitted';
+    print "<p>Section 3</p>";
+}
+  
+//#############################################################################
+//
+//        $message = '<h2>Here is the information you submitted:</h2>';
+//
+//        foreach ($_POST as $key => $value) {
+//            $message .= "<p>";
+//            $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
+//            foreach ($camelCase as $one) {
+//                $message .= $one . " ";
+//            }
+//            $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
+//        }
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2g Mail to user
 //
 // Process for mailing a message which contains the forms data
 // the message was built in section 2f.
-        $to = $email; // the person who filled out the form
-        $cc = "";
-        $bcc = "";
-        $from = "MoviePix <contact@movies.com>";
-
-// subject of mail should make sense to your form
-        $todaysDate = strftime("%x");
-        $subject = "Learn more about MoviePix: " . $todaysDate;
-
-        $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
-    } // end form is valid
-} // ends if form was submitted.
+//        $to = $email; // the person who filled out the form
+//        $cc = "";
+//        $bcc = "";
+//        $from = "MoviePix <contact@movies.com>";
+//
+//// subject of mail should make sense to your form
+//        $todaysDate = strftime("%x");
+//        $subject = "Learn more about MoviePix: " . $todaysDate;
+//
+//        $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
+//    } // end form is valid
+//} // ends if form was submitted.
 //#############################################################################
 //
 // SECTION 3 Display Form
