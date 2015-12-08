@@ -13,10 +13,6 @@ include "top.php";
 
 <?php
 // Begin output
-print '<article>';
-print '<h2>Welcome!</h2>';
-print '<p> Welcome! Thank you for coming to this movie site.  </p>';
-print '</article>';
 //maddie's stuff
 $columns = 2; 
 $query = 'SELECT fldPicture, fldDescription FROM tblMovies';
@@ -25,11 +21,15 @@ $queryDescription = $thisDatabaseReader->select($query, "", 0, 0, 0, 0, false, f
 print '<div id="accordion">';
 foreach ($queryDescription as $rec) {
     print '<div id="' . $rec['fldMovieId'] . '">';
-    print '<img src="' . $rec['fldPicture'] . '">';
+    print '<img class="accordion" src="' . $rec['fldPicture'] . '">';
     print '</div>';
 }
 print '</div>';
 //end maddie's stuff
+print '<p class="container">Welcome to DigiPix Movie Theatre! '
+. 'Please browse our Movie selection(current and upcoming). '
+        . 'Also make sure to become a member and <a href="suggestions.php">vote</a> for which movie you would '
+        . 'like us to play next in our theatre!  </p>';
 ?>
 
 <div id="footer">

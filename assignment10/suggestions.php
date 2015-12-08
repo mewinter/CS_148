@@ -34,43 +34,31 @@ $yourURL = $domain . $phpSelf;
 //
 // Initialize variables one for each form element
 // in the order they appear on the form
-//if (isset($_GET["id"])) {
-//    $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
+if (isset($_GET["id"])) {
+    $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
 
-$queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
-$queryinfo .= 'FROM tblUserInfo '
-        . 'WHERE pmkUserId = ?';
-$resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
+    $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
+    $queryinfo .= 'FROM tblUserInfo '
+            . 'WHERE pmkUserId = ?';
+    $resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
 
-$querypick = 'SELECT fldMoviePick, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
-$resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
+    $querypick = 'SELECT fldMoviePick, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
+    $resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
 
-$queryMovie = "SELECT pmkMovieId, lstTitle, fldStatus ";
-$queryMovie .= "FROM tblMovies WHERE fldStatus = 'Upcoming' ORDER BY lstTitle";
-$movies = $thisDatabaseReader->select($queryMovie, "", 1, 1, 2, 0, false, false);
+    $queryMovie = "SELECT pmkMovieId, lstTitle, fldStatus ";
+    $queryMovie .= "FROM tblMovies WHERE fldStatus = 'Upcoming' ORDER BY lstTitle";
+    $movies = $thisDatabaseReader->select($queryMovie, "", 1, 1, 2, 0, false, false);
 
-$pmkUserId = $resultsPick [0]['fnkUserId'];
-$firstName = $resultsInfo[0]["fldFirstName"];
-$lastName = $resultsInfo[0]["fldLastName"];
-$birthday = $resultsInfo[0]["fldBirthDate"];
-$email = $resultsInfo[0]["fldEmail"];
-$genresList = $resultsInfo[0]["fnkGenre"];
+    $pmkUserId = $resultsPick [0]['fnkUserId'];
+    $firstName = $resultsInfo[0]["fldFirstName"];
+    $lastName = $resultsInfo[0]["fldLastName"];
+    $birthday = $resultsInfo[0]["fldBirthDate"];
+    $email = $resultsInfo[0]["fldEmail"];
+    $genresList = $resultsInfo[0]["fnkGenre"];
 
-$movie = $resultsPick[0]['lstTitle'];
+    $movie = $resultsPick[0]['lstTitle'];
 
-$frequency = $resultsInfo[0]["fldFrequency"];
-
-//// query for genre initialization
-//$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
-////$query1 .= "FROM tblMovies ";
-////$query1 .= "GROUP BY fldGenre ";
-//// Step Three: code can be in initialize variables or where step four needs to be
-//// $buildings is an associative array
-//$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
-//
-//query for movie pick initialization 
-if ($debug) {
-    print '<p> initialize genres</p>';
+    $frequency = $resultsInfo[0]["fldFrequency"];
 } else {
     $pmkUserId = -1;
     $firstName = "";
@@ -139,6 +127,9 @@ if (isset($_POST["btnSubmit"])) {
 // form. Note it is best to follow the same order as declared in section 1c.
 
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
+    if ($pmkUserId > 0) {
+        $update = true;
+    }
     $dataInfo[] = $pmkUserId;
 
     print $pmkUserId;
@@ -193,8 +184,9 @@ if (isset($_POST["btnSubmit"])) {
     $genres .= $chkDrama;
     $genres .= $chkRomance;
     $genres .= $chkAdventure;
-
-    print $genres;
+    if ($debug) {
+        print $genres;
+    }
     $dataInfo[] = $genres;
 
     $movie = htmlentities($_POST["lstTitle"], ENT_QUOTES, 'UTF-8');
@@ -263,35 +255,56 @@ if (isset($_POST["btnSubmit"])) {
         try {
             $thisDatabaseWriter->db->beginTransaction();
             if ($update) {
-                $queryInfo = 'UPDATE tblUserInfo SET pmkUserId = ?, fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
-                        . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ?, WHERE pmkUserId = ?';
+                $queryInfo = 'UPDATE tblUserInfo SET ';
                 $dataInfo [] = $pmkUserId;
                 if ($_SERVER['REMOTE_USER'] == 'mewinter') {
                     $resultsInfo = $thisDatabase->update($queryInfo, $dataInfo, 1, 0, 0, 0, false, false);
                 }
             } else {
 
-                $queryInfo = 'INSERT INTO tblUserInfo SET pmkUserId = ?, fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
-                        . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ? ';
+                $queryInfo = 'INSERT INTO tblUserInfo SET ';
                 $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
                 $pmkUserId = $thisDatabaseWriter->lastInsert();
                 if ($debug) {
                     print "<p>pmk= " . $pmkUserId;
                 }
             }
+            $queryInfo .= 'pmkUserId = ?, fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
+                    . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ?, WHERE pmkUserId = ?';
+            if ($update) {
+                $queryInfo .= 'WHERE pmkUserId = ?';
+                $dataInfo[] = $pmkUserId;
+
+                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                    $resultsInfo = $thisDatabaseWriter->update($queryInfo, $dataInfo, 1, 0, 0, 0, false, false);
+                }
+            } else {
+                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
+                    $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
+                    $primaryKey = $thisDatabaseWriter->lastInsert();
+                    if ($debug) {
+                        print "<p>pmk= " . $primaryKey;
+                    }
+                }
+            }
+
+// ---------------------------------- INSERT/ UPDATE TABLE USER PICKS------------------------------
 
             if ($update) {
-                $queryPick = 'UPDATE tblUserPicks SET fldMoviePick = ? , fnkUserId = ?';
-                $dataPick [] = $pmkUserId;
-            }
-            if ($_SERVER['REMOTE_USER'] == 'mewinter') {
-                $resultsPick = $thisDatabase->update($queryPick, $dataPick, 1, 0, 0, 0, false, false);
+                $queryPick = 'UPDATE tblUserPicks SET ';
+                if ($_SERVER['REMOTE_USER'] == 'mewinter') {
+                    $resultsPick = $thisDatabase->update($queryPick, $dataPick, 1, 0, 0, 0, false, false);
+                }
             } else {
-            $queryPick = 'INSERT INTO tblUserPicks SET fldMoviePick = ? , fnkUserId = ?';
-            $dataPick[] = $pmkUserId;
-            $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
+                $queryPick = 'INSERT INTO tblUserPicks SET ';
+                $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
+                
+                if ($debug)
+                    print "<p> user Id insert: " . $pmkUserId;
             }
-        
+            $queryPick .= 'fldMoviePick = ? , fnkUserId = ?';
+            $dataPick[] = $pmkUserId;
+
             $dataEntered = $thisDatabaseWriter->db->commit();
 
             if ($debug)
@@ -315,9 +328,9 @@ if (isset($_POST["btnSubmit"])) {
         }
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
-        // SECTION: 2g Mail to user
+// SECTION: 2g Mail to user
 //
-        // Process for mailing a message which contains the forms data
+// Process for mailing a message which contains the forms data
 // the message was built in section 2f.
         $to = $email; // the person who filled out the form
         $cc = "";

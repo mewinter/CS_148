@@ -3,7 +3,9 @@
  * to add a new user or update an existing user 
  * 
  * Written By: Meaghan Winter
+
  */
+
 include "top.php";
 ?>
 
@@ -17,6 +19,7 @@ include "top.php";
 // SECTION: 1 Initialize variables
 $debug = true;
 $update = false;
+
 // SECTION: 1a.
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
@@ -24,26 +27,39 @@ $update = false;
 //
 // define security variable to be used in SECTION 2a.
 $yourURL = $domain . $phpSelf;
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1c form variables
 //
 // Initialize variables one for each form element
 // in the order they appear on the form
-$queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
-$queryinfo .= 'FROM tblUserInfo '
-        . 'WHERE pmkUserId = ?';
-$querypick = 'SELECT fnkGenre, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
-$resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
-$resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
-$firstName = $resultsInfo[0]["fldFirstName"];
-$lastName = $resultsInfo[0]["fldLastName"];
-$birthday = $resultsInfo[0]["fldBirthDate"];
-$email = $resultsInfo[0]["fldEmail"];
-$genresList = $resultsInfo[0]["fnkGenre"];
-$movies = $resultsPick[0]['lstTitle'];
-$frequency = $resultsInfo[0]["fldFrequency"];
-$pmkUserId = $resultsPick [0]['fnkUserId'];
+//if (isset($_GET["id"])) {
+//    $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
+
+    $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
+    $queryinfo .= 'FROM tblUserInfo '
+            . 'WHERE pmkUserId = ?';
+    $resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
+
+    $querypick = 'SELECT fldMoviePick, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
+    $resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
+
+    $queryMovie = "SELECT pmkMovieId, lstTitle, fldStatus ";
+    $queryMovie .= "FROM tblMovies WHERE fldStatus = 'Upcoming' ORDER BY lstTitle";
+    $movies = $thisDatabaseReader->select($queryMovie, "", 1, 1, 2, 0, false, false);
+
+    $pmkUserId = $resultsPick [0]['fnkUserId'];
+    $firstName = $resultsInfo[0]["fldFirstName"];
+    $lastName = $resultsInfo[0]["fldLastName"];
+    $birthday = $resultsInfo[0]["fldBirthDate"];
+    $email = $resultsInfo[0]["fldEmail"];
+    $genresList = $resultsInfo[0]["fnkGenre"];
+
+    $movie = $resultsPick[0]['lstTitle'];
+
+    $frequency = $resultsInfo[0]["fldFrequency"];
+
 //// query for genre initialization
 //$query1 = "SELECT fldGenre, pmkMovieId FROM tblMovies GROUP BY fldGenre";
 ////$query1 .= "FROM tblMovies ";
@@ -51,12 +67,8 @@ $pmkUserId = $resultsPick [0]['fnkUserId'];
 //// Step Three: code can be in initialize variables or where step four needs to be
 //// $buildings is an associative array
 //$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
+//
 //query for movie pick initialization 
-$query2 = "SELECT pmkMovieId, lstTitle, fldStatus ";
-$query2 .= "FROM tblMovies ";
-$query2 .= "WHERE fldStatus = 'Upcoming' ";
-$query2 .= "ORDER BY lstTitle";
-$movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 if ($debug) {
     print '<p> initialize genres</p>';
 } else {
@@ -71,15 +83,17 @@ if ($debug) {
     $romance = false;
     $adventure = false;
 //    $genres = "";
-    $movie = 'Rudderless';
-    $frequency = 'Weekly';
+    $movie = '';
+    $frequency = '';
 }
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1d form error flags
 //
 // Initialize Error Flags one for each form element we validate
 // in the order they appear in section 1c.
+$pmkUserIdERROR= false;
 $firstNameERROR = false;
 $lastNameERROR = false;
 $birthdayERROR = false;
@@ -89,9 +103,11 @@ $comedyERROR = false;
 $dramaERROR = false;
 $romanceERROR = false;
 $adventureERROR = false;
+
 //$genresERROR = false;
 $movieERROR = false;
 $frequencyERROR = false;
+
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1e misc variables
@@ -100,6 +116,7 @@ $frequencyERROR = false;
 $errorMsg = array();
 $data = array();
 $dataEntered = false;
+
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2 Process for when the form is submitted
@@ -120,60 +137,79 @@ if (isset($_POST["btnSubmit"])) {
 // SECTION: 2b Sanitize (clean) data
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
+
     $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $pmkUserId;
-    $dataPick[]= $pmkUserId;
+    
     print $pmkUserId;
     // I am not putting the ID in the $data array at this time
+
     $firstName = htmlentities($_POST["txtFirstName"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $firstName;
+
     $lastName = htmlentities($_POST["txtLastName"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $lastName;
+
     $birthday = htmlentities($_POST["txtBirthday"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $birthday;
+
     $email = filter_var($_POST["txtEmail"], FILTER_SANITIZE_EMAIL, 'UTF-8');
     $dataInfo[] = $email;
+
 //    $genres = filter_var($_POST["chkGenres"], ENT_QUOTES, 'UTF-8');
+
     if (isset($_POST["chkAction"])) {
         $chkAction = 'Action';
     } else {
         $chkAction = '';
     }
+
     if (isset($_POST["chkComedy"])) {
         $chkComedy = 'Comedy';
     } else {
         $chkComedy = '';
     }
+
     if (isset($_POST["chkDrama"])) {
         $chkDrama = 'Drama';
     } else {
         $chkDrama = '';
     }
+
     if (isset($_POST["chkRomance"])) {
         $chkRomance = 'Romance';
     } else {
         $chkRomance = '';
     }
+
     if (isset($_POST["chkAdventure"])) {
         $chkAdventure = 'Adventure';
     } else {
         $chkAdventure = '';
     }
+
     $genres = $chkAction;
     $genres .= $chkComedy;
     $genres .= $chkDrama;
     $genres .= $chkRomance;
     $genres .= $chkAdventure;
+
     print $genres;
     $dataInfo[] = $genres;
-    $movie = filter_var($_POST["lstTitle"], ENT_QUOTES, 'UTF-8');
+
+    $movie = htmlentities($_POST["lstTitle"], ENT_QUOTES, 'UTF-8');
     $dataPick[] = $movie;
-    $frequency = filter_var($_POST["radFrequency"], ENT_QUOTES, 'UTF-8');
+
+    $frequency = htmlentities($_POST["radFrequency"], ENT_QUOTES, 'UTF-8');
     $dataInfo[] = $frequency;
+print '<p>test ' . $frequency;
+
+
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2c Validation
 //
+
     if ($firstName == "") {
         $errorMsg[] = "Please enter your first name";
         $firstNameERROR = true;
@@ -181,6 +217,7 @@ if (isset($_POST["btnSubmit"])) {
         $errorMsg[] = "Your first name appears to have extra character.";
         $firstNameERROR = true;
     }
+
     if ($lastName == "") {
         $errorMsg[] = "Please enter your last name";
         $lastNameERROR = true;
@@ -188,6 +225,7 @@ if (isset($_POST["btnSubmit"])) {
         $errorMsg[] = "Your last name appears to have extra character.";
         $lastNameERROR = true;
     }
+
     if ($birthday == "") {
         $errorMsg[] = "Please enter your birthday";
         $birthdayERROR = true;
@@ -207,36 +245,43 @@ if (isset($_POST["btnSubmit"])) {
 //
 // Process for when the form passes validation (the errorMsg array is empty)
 //
+
     if (!$errorMsg) {
         if ($debug) {
             print '<p> 2d';
             print "<p>Form is valid</p>";
         }
+
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //
 // SECTION: 2e Save Data
         if ($debug) {
             print '<p> 2e';
         }
+
         $dataEntered = false;
         try {
             $thisDatabaseWriter->db->beginTransaction();
-            $queryInfo = 'INSERT INTO tblUserInfo SET fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
+
+            $queryInfo = 'INSERT INTO tblUserInfo SET pmkUserId = ?, fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
                     . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ? ';
+
             //     if ($_SERVER["REMOTE_USER"] == 'mewinter') {
             $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
-            $primaryKey = $thisDatabaseWriter->lastInsert();
+            $pmkUserId = $thisDatabaseWriter->lastInsert();
             if ($debug) {
-                print "<p>pmk= " . $primaryKey;
+                print "<p>pmk= " . $pmkUserId;
             }
+
             $queryPick = 'INSERT INTO tblUserPicks SET ';
-            $queryPick .= 'fnkUserId = ? ,';
-            $queryPick .= 'fldMoviePick = ? ';
-            
-           // $dataPick[] = $primaryKey;
+            $queryPick .= 'fldMoviePick = ? ,';
+            $queryPick .= 'fnkUserId = ?';
+
+             $dataPick[] = $pmkUserId;
+print "<p> type seo <pre>";
+print_r ($dataPick);
             $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
             // delete this line, i dont think you need it (85% sure anyway) $primaryKey = $thisDatabaseWriter->lastInsert();
-            
 //            $queryPick = 'INSERT INTO tblUserPicks SET ';
 //            $queryPick .= 'fldMoviePick = ? ,';
 //            $queryPick .= 'fnkUserId = ? ';
@@ -247,6 +292,7 @@ if (isset($_POST["btnSubmit"])) {
 //                print "<p>pmk= " . $primaryKey;
 //            }
             $dataEntered = $thisDatabaseWriter->db->commit();
+
             if ($debug)
                 print "<p>transaction complete ";
         } catch (PDOExecption $e) {
@@ -255,7 +301,9 @@ if (isset($_POST["btnSubmit"])) {
                 print "Error!: " . $e->getMessage() . "</br>";
             $errorMsg[] = "There was a problem with accpeting your data please contact us directly.";
         }
+
         $message = '<h2>Here is the information you submitted:</h2>';
+
         foreach ($_POST as $key => $value) {
             $message .= "<p>";
             $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
@@ -264,7 +312,7 @@ if (isset($_POST["btnSubmit"])) {
             }
             $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
         }
-          //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
         //
         // SECTION: 2g Mail to user
         //
@@ -274,11 +322,12 @@ if (isset($_POST["btnSubmit"])) {
         $cc = "";
         $bcc = "";
         $from = "MoviePix <contact@movies.com>";
+
         // subject of mail should make sense to your form
         $todaysDate = strftime("%x");
         $subject = "Learn more about MoviePix: " . $todaysDate;
+
         $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
-        
     } // end form is valid
 } // ends if form was submitted.
 //#############################################################################
@@ -292,21 +341,21 @@ if (isset($_POST["btnSubmit"])) {
 // SECTION 3a.
 // If its the first time coming to the form or there are errors we are going
 // to display the form.
-    if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked with: end body submit
-        print "<h1>Your Request has ";
-        if (!$mailed) {
-            print "not ";
-        }
-        print "been processed</h1>";
-        print "<p>A copy of this message has ";
-        if (!$mailed) {
-            print "not ";
-        }
-        print "been sent</p>";
-        print "<p>To: " . $email . "</p>";
-        print "<p>Mail Message:</p>";
-        print $message;
-    } else {
+if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked with: end body submit
+    print "<h1>Your Request has ";
+    if (!$mailed) {
+        print "not ";
+    }
+    print "been processed</h1>";
+    print "<p>A copy of this message has ";
+    if (!$mailed) {
+        print "not ";
+    }
+    print "been sent</p>";
+    print "<p>To: " . $email . "</p>";
+    print "<p>Mail Message:</p>";
+    print $message;
+} else {
 //####################################
 //
 // SECTION 3b Error Messages
@@ -315,6 +364,7 @@ if (isset($_POST["btnSubmit"])) {
     if ($errorMsg) {
         print '<div id="errors">';
         print '<h1>Your form has the following mistakes</h1>';
+
         print "<ol>\n";
         foreach ($errorMsg as $err) {
             print "<li>" . $err . "</li>\n";
@@ -345,9 +395,11 @@ if (isset($_POST["btnSubmit"])) {
                 <!--class="wrapper">-->
                 <legend><h2>User Information</h2></legend>
 
-                <input type="hidden" id="hidUserId" name="hidUserId"
-                       value="<?php print $pmkUserId; ?>"
-                       >
+                    <input type="hidden" id="hidUserId" name="hidUserId"
+                           value="
+    <?php print $pmkUserId; ?>
+    "
+                           >
 
                 <label for="txtFirstName" class="required">First Name
                     <input type="text" id="txtFirstName" name="txtFirstName"
@@ -429,12 +481,15 @@ if (isset($_POST["btnSubmit"])) {
                 <select id="lstTitle" name="lstTitle" tabindex="300">;
     <?php
     foreach ($movies as $row) {
+
         print '<option ';
         if ($movie == $row["lstTitle"])
             print " selected= 'selected' ";
         print 'value="' . $row["lstTitle"] . '">' . $row["lstTitle"];
+
         print '</option>';
     }
+
     print '</select></label>';
     ?>
                     <!----------------- -- END MOVIE PICK------------------------------------------------>
@@ -480,6 +535,7 @@ if (isset($_POST["btnSubmit"])) {
 } // end body submit
 ?>
                 </article>
+
                 <?php
                 include "footer.php";
                 if ($debug)

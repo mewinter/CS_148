@@ -1,11 +1,10 @@
 /* 
     Created on : Jun 10, 2015, 10:27:26 AM
-    Author     : Robert Erickson
+    Author     : Meaghan Winter
 */
 @import url('reset.css');
 /*------------------------   standard elements  ----------------------------- */
-@import url('reset.css');
-/*------------------------   standard elements  ----------------------------- */
+
 /*body{
     margin: 0 5% 0 5%;
 }*/
@@ -33,14 +32,62 @@ header .float_left{
     background-color: #afaf83;
 }*/
 
-img{
-    max-width: 100%; /* image strinks to fit containor but does not stretch */
+img.imgdescription{
+    //height: 50%;
+    //width: 20%;
+    //padding-left: 5em;
+    //padding-bottom: 1em;
+    
+    //float: left;
+}
+
+p.txtdescription{
+    width: 30%;
+    padding-left: 5em;
+    padding-bottom: 4em;
+    padding-right: 5em;
+}
+
+span.description{
+    margin-left:auto;
+    margin-right:auto;
 }
 
 section{
     padding: 2em;
     width: 40%;  
 }
+/*button .navbar {
+   border-top: 1px solid #96d1f8;
+   background: #65a9d7;
+   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+   background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+   background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+   background: -o-linear-gradient(top, #3e779d, #65a9d7);
+   padding: 6.5px 13px;
+   -webkit-border-radius: 0px;
+   -moz-border-radius: 0px;
+   border-radius: 0px;
+   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+   box-shadow: rgba(0,0,0,1) 0 1px 0;
+   text-shadow: rgba(0,0,0,.4) 0 1px 0;
+   color: white;
+   font-size: 16px;
+   font-family: Georgia, serif;
+   text-decoration: none;
+   vertical-align: middle;
+   }
+button .navbar :hover {
+   border-top-color: #28597a;
+   background: #28597a;
+   color: #ccc;
+   }
+button .navbar :active {
+   border-top-color: #1b435e;
+   background: #1b435e;
+   }*/
 
 /*------------------------   classes           ------------------------------ */
 .float_left {
@@ -114,14 +161,14 @@ table :hover
                 height: 400px;
                 }
             #accordion div {
-                    height:800px;
+                    height:300px;
                     overflow: hidden;}
             #accordion:hover div {
-                    height: 800px; }
+                    height: 300px; }
             #accordion:hover div:hover {
                     height: 300px;
                     overflow: hidden; }
-img{
+img.accordion{
     height:300px;
    
 }
@@ -282,7 +329,7 @@ select {
 .mqa-display object {
   max-width: none !important; }
 
-button {
+/*button {
   -webkit-appearance: none;
   -moz-appearance: none;
   background: transparent;
@@ -410,7 +457,7 @@ button {
   .button.arrow-only::after {
     margin-left: 0;
     float: none;
-    top: 0.2em; }
+    top: 0.2em; }*/
 
 [type='text'], [type='password'], [type='date'], [type='datetime'], [type='datetime-local'], [type='month'], [type='week'], [type='email'], [type='number'], [type='search'], [type='tel'], [type='time'], [type='url'], [type='color'],
 textarea {
