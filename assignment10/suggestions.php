@@ -51,7 +51,7 @@ $birthday = $resultsInfo[0]["fldBirthDate"];
 $email = $resultsInfo[0]["fldEmail"];
 $genresList = $resultsInfo[0]["fnkGenre"];
 
-$movies = $resultsPick[0]['txtTitle'];
+$movies = $resultsPick[0]['lstTitle'];
 
 $frequency = $resultsInfo[0]["fldFrequency"];
 
@@ -65,10 +65,10 @@ $pmkUserId = $resultsPick [0]['fnkUserId'];
 //// $buildings is an associative array
 //$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
 //query for movie pick initialization 
-$query2 = "SELECT pmkMovieId, txtTitle, fldStatus ";
+$query2 = "SELECT pmkMovieId, lstTitle, fldStatus ";
 $query2 .= "FROM tblMovies ";
 $query2 .= "WHERE fldStatus = 'Upcoming' ";
-$query2 .= "ORDER BY txtTitle";
+$query2 .= "ORDER BY lstTitle";
 
 $movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 
@@ -487,9 +487,9 @@ if (isset($_POST["btnSubmit"])) {
     foreach ($movies as $row) {
 
         print '<option ';
-        if ($movie == $row["txtTitle"])
+        if ($movie == $row["lstTitle"])
             print " selected= 'selected' ";
-        print 'value="' . $row["fldBuilding"] . '">' . $row["fldBuilding"];
+        print 'value="' . $row["lstTitle"] . '">' . $row["lstTitle"];
 
         print '</option>';
     }
