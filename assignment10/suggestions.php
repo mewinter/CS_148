@@ -78,7 +78,7 @@ $movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 if ($debug) {
     print '<p> initialize genres</p>';
 } else {
-    $pmkUserId = '';
+    $pmkUserId = -1;
     $firstName = "";
     $lastName = "";
     $birthday = "";
@@ -89,7 +89,7 @@ if ($debug) {
     $romance = false;
     $adventure = false;
 //    $genres = "";
-    $movies = '';
+    $movie = 'Rudderless';
     $frequency = 'Weekly';
 }
 
@@ -110,7 +110,7 @@ $romanceERROR = false;
 $adventureERROR = false;
 
 //$genresERROR = false;
-$moviesERROR = false;
+$movieERROR = false;
 $frequencyERROR = false;
 
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
@@ -143,7 +143,7 @@ if (isset($_POST["btnSubmit"])) {
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
 
-    $pmkUserId = htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
+    $pmkUserId = (int) htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $pmkUserId;
     print $pmkUserId;
     // I am not putting the ID in the $data array at this time
@@ -201,8 +201,8 @@ if (isset($_POST["btnSubmit"])) {
     print $genres;
     $dataInfo[] = $genres;
 
-    $title = filter_var($_POST["txtTitle"], ENT_QUOTES, 'UTF-8');
-    $dataPick[] = $title;
+    $movie = filter_var($_POST["lstTitle"], ENT_QUOTES, 'UTF-8');
+    $dataPick[] = $movie;
 
     $frequency = filter_var($_POST["radFrequency"], ENT_QUOTES, 'UTF-8');
     $dataInfo[] = $frequency;
@@ -481,14 +481,15 @@ if (isset($_POST["btnSubmit"])) {
 
             <!----------------- -- MOVIE PICK ------------------------------------------------>
 
-            <label for="txtTitle"><legend><h2>Upcoming Movie Pick</h2></legend> <select id="txtTitle" name="txtTitle" tabindex="300">;
+            <label for="lstTitle"><legend><h2>Upcoming Movie Pick</h2></legend> 
+                <select id="lstTitle" name="lstTitle" tabindex="300">;
     <?php
     foreach ($movies as $row) {
 
         print '<option ';
-        if ($movies == $row["txtTitle"])
+        if ($movie == $row["txtTitle"])
             print " selected= 'selected' ";
-        print 'value= "txtTitle">' . $row["txtTitle"];
+        print 'value="' . $row["fldBuilding"] . '">' . $row["fldBuilding"];
 
         print '</option>';
     }
