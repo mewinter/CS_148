@@ -36,7 +36,6 @@ $yourURL = $domain . $phpSelf;
 // in the order they appear on the form
 
 
-
 $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
 $queryinfo .= 'FROM tblUserInfo '
         . 'WHERE pmkUserId = ?';
@@ -52,7 +51,7 @@ $birthday = $resultsInfo[0]["fldBirthDate"];
 $email = $resultsInfo[0]["fldEmail"];
 $genresList = $resultsInfo[0]["fnkGenre"];
 
-$movies = $resultsPick[0]['fldTitle'];
+$movies = $resultsPick[0]['txtTitle'];
 
 $frequency = $resultsInfo[0]["fldFrequency"];
 
@@ -66,10 +65,10 @@ $pmkUserId = $resultsPick [0]['fnkUserId'];
 //// $buildings is an associative array
 //$genres = $thisDatabaseReader->select($query1, "", 0, 0, 0, 0, false, false);
 //query for movie pick initialization 
-$query2 = "SELECT pmkMovieId, fldTitle, fldStatus ";
+$query2 = "SELECT pmkMovieId, txtTitle, fldStatus ";
 $query2 .= "FROM tblMovies ";
 $query2 .= "WHERE fldStatus = 'Upcoming' ";
-$query2 .= "ORDER BY fldTitle";
+$query2 .= "ORDER BY txtTitle";
 
 $movies = $thisDatabaseReader->select($query2, "", 1, 1, 2, 0, false, false);
 
@@ -144,7 +143,7 @@ if (isset($_POST["btnSubmit"])) {
 // remove any potential JavaScript or html code from users input on the
 // form. Note it is best to follow the same order as declared in section 1c.
 
-    $pmkUserId = htmlentities($_SERVER["REMOTE_USER"], ENT_QUOTES, "UTF-8");
+    $pmkUserId = htmlentities($_POST["hidUserId"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $pmkUserId;
     print $pmkUserId;
     // I am not putting the ID in the $data array at this time
@@ -280,13 +279,23 @@ if (isset($_POST["btnSubmit"])) {
 
             $queryPick = 'INSERT INTO tblUserPicks SET ';
             $queryPick .= 'fldMoviePick = ? ,';
-            $queryPick .= 'fnkUserId = ? ';
+            $queryPick .= 'fnkUserId = pmkUserId ';
+
+            $dataPick[] = $primaryKey;
 
             $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
-            $primaryKey = $thisDatabaseWriter->lastInsert();
-            if ($debug) {
-                print "<p>pmk= " . $primaryKey;
-            }
+            // delete this line, i dont think you need it (85% sure anyway) $primaryKey = $thisDatabaseWriter->lastInsert();
+
+            
+//            $queryPick = 'INSERT INTO tblUserPicks SET ';
+//            $queryPick .= 'fldMoviePick = ? ,';
+//            $queryPick .= 'fnkUserId = ? ';
+//
+//            $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
+//            $primaryKey = $thisDatabaseWriter->lastInsert();
+//            if ($debug) {
+//                print "<p>pmk= " . $primaryKey;
+//            }
             $dataEntered = $thisDatabaseWriter->db->commit();
 
             if ($debug)
@@ -472,14 +481,14 @@ if (isset($_POST["btnSubmit"])) {
 
             <!----------------- -- MOVIE PICK ------------------------------------------------>
 
-            <label for="fldTitle"><legend><h2>Upcoming Movie Pick</h2></legend> <select id="fldTitle" name="fldTitle" tabindex="300">;
+            <label for="txtTitle"><legend><h2>Upcoming Movie Pick</h2></legend> <select id="txtTitle" name="txtTitle" tabindex="300">;
     <?php
     foreach ($movies as $row) {
 
         print '<option ';
-        if ($movies == $row["fldTitle"])
+        if ($movies == $row["txtTitle"])
             print " selected= 'selected' ";
-        print 'value= "fldTitle">' . $row["fldTitle"];
+        print 'value= "txtTitle">' . $row["txtTitle"];
 
         print '</option>';
     }
