@@ -130,10 +130,9 @@ if (isset($_POST["btnSubmit"])) {
     if ($pmkUserId > 0) {
         $update = true;
     }
-    $dataInfo[] = $pmkUserId;
+//    $dataInfo[] = $pmkUserId;
 
     print $pmkUserId;
-// I am not putting the ID in the $data array at this time
 
     $firstName = htmlentities($_POST["txtFirstName"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $firstName;
@@ -250,41 +249,29 @@ if (isset($_POST["btnSubmit"])) {
         if ($debug) {
             print '<p> 2e';
         }
-
         $dataEntered = false;
         try {
             $thisDatabaseWriter->db->beginTransaction();
             if ($update) {
                 $queryInfo = 'UPDATE tblUserInfo SET ';
-                $dataInfo [] = $pmkUserId;
-                if ($_SERVER['REMOTE_USER'] == 'mewinter') {
-                    $resultsInfo = $thisDatabase->update($queryInfo, $dataInfo, 1, 0, 0, 0, false, false);
-                }
             } else {
-
                 $queryInfo = 'INSERT INTO tblUserInfo SET ';
-                $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
-                $pmkUserId = $thisDatabaseWriter->lastInsert();
+
                 if ($debug) {
                     print "<p>pmk= " . $pmkUserId;
                 }
             }
             $queryInfo .= 'pmkUserId = ?, fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
-                    . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ?, WHERE pmkUserId = ?';
+                    . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ?, WHERE pmkUserId = ? ';
             if ($update) {
                 $queryInfo .= 'WHERE pmkUserId = ?';
-                $dataInfo[] = $pmkUserId;
-
-                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                    $resultsInfo = $thisDatabaseWriter->update($queryInfo, $dataInfo, 1, 0, 0, 0, false, false);
-                }
+//                $dataInfo[] = $pmkUserId;
+                $resultsInfo = $thisDatabaseWriter->update($queryInfo, $dataInfo, 1, 0, 0, 0, false, false);
             } else {
-                if ($_SERVER["REMOTE_USER"] == 'mewinter') {
-                    $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
-                    $primaryKey = $thisDatabaseWriter->lastInsert();
-                    if ($debug) {
-                        print "<p>pmk= " . $primaryKey;
-                    }
+                $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
+                $pmkUserId = $thisDatabaseWriter->lastInsert();
+                if ($debug) {
+                    print "<p>pmk= " . $primaryKey;
                 }
             }
 
@@ -292,19 +279,24 @@ if (isset($_POST["btnSubmit"])) {
 
             if ($update) {
                 $queryPick = 'UPDATE tblUserPicks SET ';
-                if ($_SERVER['REMOTE_USER'] == 'mewinter') {
-                    $resultsPick = $thisDatabase->update($queryPick, $dataPick, 1, 0, 0, 0, false, false);
-                }
+                    
             } else {
                 $queryPick = 'INSERT INTO tblUserPicks SET ';
-                $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick);
-                
                 if ($debug)
-                    print "<p> user Id insert: " . $pmkUserId;
+                    print "<p> user Id insert 1: " . $pmkUserId;
             }
-            $queryPick .= 'fldMoviePick = ? , fnkUserId = ?';
-            $dataPick[] = $pmkUserId;
+            $queryPick .= 'fldMoviePick = ? , fnkUserId = ? ';
 
+            if ($update){
+                $queryPick .= 'WHERE fnkUserId = ?';
+                $dataPick [] = $pmkUserId;
+                $resultsPick = $thisDatabase->update($queryPick, $dataPick, 1, 0, 0, 0, false, false);
+            }else{
+                $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick); 
+                $pmkUserId = $thisDatabaseWriter -> lastInsert();
+                if ($debug)
+                    print "<p> user Id insert 2: " . $pmkUserId;
+            }
             $dataEntered = $thisDatabaseWriter->db->commit();
 
             if ($debug)
@@ -350,58 +342,58 @@ if (isset($_POST["btnSubmit"])) {
 //
 ?>
 <article id="main">
-    <?php
+<?php
 //####################################
 // SECTION 3a.
 // If its the first time coming to the form or there are errors we are going
 // to display the form.
-    if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked with: end body submit
-        print "<h1>Your Request has ";
-        if (!$mailed) {
-            print "not ";
-        }
-        print "been processed</h1>";
-        print "<p>A copy of this message has ";
-        if (!$mailed) {
-            print "not ";
-        }
-        print "been sent</p>";
-        print "<p>To: " . $email . "</p>";
-        print "<p>Mail Message:</p>";
-        print $message;
-    } else {
+if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked with: end body submit
+    print "<h1>Your Request has ";
+    if (!$mailed) {
+        print "not ";
+    }
+    print "been processed</h1>";
+    print "<p>A copy of this message has ";
+    if (!$mailed) {
+        print "not ";
+    }
+    print "been sent</p>";
+    print "<p>To: " . $email . "</p>";
+    print "<p>Mail Message:</p>";
+    print $message;
+} else {
 //####################################
 //
 // SECTION 3b Error Messages
 //
 // display any error messages before we print out the form
-        if ($errorMsg) {
-            print '<div id="errors">';
-            print '<h1>Your form has the following mistakes</h1>';
+    if ($errorMsg) {
+        print '<div id="errors">';
+        print '<h1>Your form has the following mistakes</h1>';
 
-            print "<ol>\n";
-            foreach ($errorMsg as $err) {
-                print "<li>" . $err . "</li>\n";
-            }
-            print "</ol>\n";
-            print '</div>';
+        print "<ol>\n";
+        foreach ($errorMsg as $err) {
+            print "<li>" . $err . "</li>\n";
         }
+        print "</ol>\n";
+        print '</div>';
+    }
 //####################################
 //
 // SECTION 3c html Form
 //
-        /* Display the HTML form. note that the action is to this same page. $phpSelf
-          is defined in top.php
-          NOTE the line:
-          value="<?php print $email; ?>
-          this makes the form sticky by displaying either the initial default value (line 35)
-          or the value they typed in (line 84)
-          NOTE this line:
-          <?php if($emailERROR) print 'class="mistake"'; ?>
-          this prints out a css class so that we can highlight the background etc. to
-          make it stand out that a mistake happened here.
-         */
-        ?>
+    /* Display the HTML form. note that the action is to this same page. $phpSelf
+      is defined in top.php
+      NOTE the line:
+      value="<?php print $email; ?>
+      this makes the form sticky by displaying either the initial default value (line 35)
+      or the value they typed in (line 84)
+      NOTE this line:
+      <?php if($emailERROR) print 'class="mistake"'; ?>
+      this prints out a css class so that we can highlight the background etc. to
+      make it stand out that a mistake happened here.
+     */
+    ?>
         <form action="<?php print $phpSelf; ?>"
               method="post"
               id="frmRegister">
@@ -411,7 +403,7 @@ if (isset($_POST["btnSubmit"])) {
 
                 <input type="hidden" id="hidUserId" name="hidUserId"
                        value="
-                       <?php print $pmkUserId; ?>
+    <?php print $pmkUserId; ?>
                        "
                        >
 
@@ -419,7 +411,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtFirstName" name="txtFirstName"
                            value="<?php print $firstName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your first name"
-                           <?php if ($firstNameERROR) print 'class="mistake"'; ?>
+    <?php if ($firstNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            autofocus>
                 </label>
@@ -428,7 +420,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtLastName" name="txtLastName"
                            value="<?php print $lastName; ?>"
                            tabindex="100" maxlength="45" placeholder="Enter your last name"
-                           <?php if ($lastNameERROR) print 'class="mistake"'; ?>
+    <?php if ($lastNameERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>
@@ -437,7 +429,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtBirthday" name="txtBirthday"
                            value="<?php print $birthday; ?>"
                            tabindex="100" maxlength="45" placeholder="YYYY-MM-DD"
-                           <?php if ($birthdayERROR) print 'class="mistake"'; ?>
+    <?php if ($birthdayERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()"
                            >
                 </label>  
@@ -446,7 +438,7 @@ if (isset($_POST["btnSubmit"])) {
                     <input type="text" id="txtEmail" name="txtEmail"
                            value="<?php print $email; ?>"
                            tabindex="120" maxlength="45" placeholder="Enter a valid email address"
-                           <?php if ($emailERROR) print 'class="mistake"'; ?>
+    <?php if ($emailERROR) print 'class="mistake"'; ?>
                            onfocus="this.select()" 
                            autofocus>
                 </label>
@@ -461,31 +453,31 @@ if (isset($_POST["btnSubmit"])) {
                               id="chkAction" 
                               name="chkAction" 
                               value="Action"
-                              <?php if ($action) print ' checked '; ?>
+    <?php if ($action) print ' checked '; ?>
                               tabindex="180"> Action</label>
                 <label><input type="checkbox" 
                               id="chkComedy" 
                               name="chkComedy" 
                               value="Comedy"
-                              <?php if ($comedy) print ' checked '; ?>
+    <?php if ($comedy) print ' checked '; ?>
                               tabindex="190"> Comedy</label>
                 <label><input type="checkbox" 
                               id="chkDrama" 
                               name="chkDrama" 
                               value="Drama"
-                              <?php if ($drama) print ' checked '; ?>
+    <?php if ($drama) print ' checked '; ?>
                               tabindex="200"> Drama</label>
                 <label><input type="checkbox" 
                               id="chkRomance" 
                               name="chkRomance" 
                               value="Romance"
-                              <?php if ($romance) print ' checked '; ?>
+    <?php if ($romance) print ' checked '; ?>
                               tabindex="210"> Romance</label> 
                 <label><input type="checkbox" 
                               id="chkAdventure" 
                               name="chkAdventure" 
                               value="Adventure"
-                              <?php if ($Adventure) print ' checked '; ?>
+    <?php if ($Adventure) print ' checked '; ?>
                               tabindex="220"> Adventure</label>
             </fieldset> <!-- ends wrapper Two -->
 
@@ -493,19 +485,19 @@ if (isset($_POST["btnSubmit"])) {
 
             <label for="lstTitle"><legend><h2>Upcoming Movie Pick</h2></legend> 
                 <select id="lstTitle" name="lstTitle" tabindex="300">;
-                    <?php
-                    foreach ($movies as $row) {
+    <?php
+    foreach ($movies as $row) {
 
-                        print '<option ';
-                        if ($movie == $row["lstTitle"])
-                            print " selected= 'selected' ";
-                        print 'value="' . $row["lstTitle"] . '">' . $row["lstTitle"];
+        print '<option ';
+        if ($movie == $row["lstTitle"])
+            print " selected= 'selected' ";
+        print 'value="' . $row["lstTitle"] . '">' . $row["lstTitle"];
 
-                        print '</option>';
-                    }
+        print '</option>';
+    }
 
-                    print '</select></label>';
-                    ?>
+    print '</select></label>';
+    ?>
                     <!----------------- -- END MOVIE PICK------------------------------------------------>
 
                     <!----------------- -- EMAIL FREQUENCY ------------------------------------------------>
@@ -545,13 +537,13 @@ if (isset($_POST["btnSubmit"])) {
                     </fieldset> <!-- ends buttons -->
                     </fieldset> <!-- Ends Wrapper -->
                     </form>
-                    <?php
-                } // end body submit
-                ?>
+    <?php
+} // end body submit
+?>
                 </article>
 
-                <?php
-                include "footer.php";
-                if ($debug)
-                    print "<p>END OF PROCESSING</p>";
-                ?>
+<?php
+include "footer.php";
+if ($debug)
+    print "<p>END OF PROCESSING</p>";
+?>
