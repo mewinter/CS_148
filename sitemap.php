@@ -30,6 +30,11 @@ and open the template in the editor.
             <ul><li><a href="assignment10/index.php">Index.php</a></li>
                 <li><a href="assignment10/tables.php">Tables.php</a></li>
                 <li><a href="assignment10/suggestions.php">Suggestions.php</a></li>
+                <li><a href="assignment10/about.php">About</a></li>
+                <li><a href="assignment10/form.php">Form Testing</a></li>
+                <li><a href="assignment10/movieDescription.php">Movie Descriptions</a></li>
+                <li><a href="assignment10/currentMovieSchedule.php">Movie Schedule</a></li>
+                <li><a href="assignment10/confirmation.php">Confirmation Page</a></li>
             </ul>
 
             <h2>Advising</h2>
