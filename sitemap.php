@@ -28,13 +28,17 @@ and open the template in the editor.
 
             <h2>Final Project</h2>
             <ul><li><a href="assignment10/index.php">Index.php</a></li>
-                <li><a href="assignment10/tables.php">Tables.php</a></li>
-                <li><a href="assignment10/suggestions.php">Suggestions.php</a></li>
+                <li><a href="assignment10/pricing.php">Pricing</a></li>
+                <li><a href="assignment10/tables.php">Tables</a></li>
+                <li><a href="assignment10/suggestions.php">Suggestions (form)</a></li>
                 <li><a href="assignment10/about.php">About</a></li>
-                <li><a href="assignment10/form.php">Form Testing</a></li>
-                <li><a href="assignment10/movieDescription.php">Movie Descriptions</a></li>
+                <li><a href="assignment10/employment.php">Careers</a></li>
+                <li><a href="assignment10/descriptions.php">Movie Descriptions</a></li>
                 <li><a href="assignment10/currentMovieSchedule.php">Movie Schedule</a></li>
+                <li><a href="assignment10/upcoming.php">Upcoming Movies</a></li>
+                <li><a href="assignment10/post.php">Admin Page</a></li>
                 <li><a href="assignment10/confirmation.php">Confirmation Page</a></li>
+                <li><a href="assignment10/specs.pdf">Specs Document</a></li>
             </ul>
 
             <h2>Advising</h2>

@@ -1,23 +1,21 @@
+<!DOCTYPE html>
+
+
 <?php
-/* the purpose of this page is to display a form to allow a user and allow us
- * to add a new user or update an existing user 
- * 
- * Written By: Meaghan Winter
-
- */
-
 include "top.php";
+
 ?>
+<body>  
 
 <div id="header">
-    <h1>Vote for the Next Movie Feature!</h1>
+<h1>Suggestions</h1>
 </div>
 
 <?php
 //%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%^%
 //
 // SECTION: 1 Initialize variables
-$debug = true;
+$debug = false;
 $update = false;
 
 // SECTION: 1e misc variables
@@ -61,7 +59,7 @@ if (isset($_GET["id"])) {
     $querypick = 'SELECT fldMoviePick, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
     $resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
 
-    $pmkUserId = $resultsPick [0]['fnkUserId'];
+  //  $pmkUserId = $resultsPick [0]['fnkUserId'];
     $firstName = $resultsInfo[0]["fldFirstName"];
     $lastName = $resultsInfo[0]["fldLastName"];
     $birthday = $resultsInfo[0]["fldBirthDate"];
@@ -266,11 +264,12 @@ if (isset($_POST["btnSubmit"])) {
                 $queryInfo = 'UPDATE tblUserInfo SET ';
             } else {
                 $queryInfo = 'INSERT INTO tblUserInfo SET ';
-                if ($debug) {
-                    print "<p>pmk= " . $pmkUserId;
-                }
+               
             }
 //5
+             if ($debug) {
+                    print "<p>pmk= " . $pmkUserId;
+                }
             $queryInfo .= 'fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
                     . 'fldEmail = ?, fldAction = ?, fldComedy = ?, fldDrama = ?, '
                     . 'fldRomance = ?, fldAdventure = ? , fldFrequency = ? ';
@@ -281,11 +280,11 @@ if (isset($_POST["btnSubmit"])) {
             } else {
                 $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
                 $pmkUserId = $thisDatabaseWriter->lastInsert();
-                if ($debug) {
-                    print "<p>pmk= " . $pmkUserId;
-                }
+           
             }
-
+if ($debug) {
+                    print "<p>after pmk= " . $pmkUserId;
+                }
 // ---------------------------------- INSERT/ UPDATE TABLE USER PICKS------------------------------
 
             if ($update) {
@@ -293,21 +292,27 @@ if (isset($_POST["btnSubmit"])) {
                     
             } else {
                 $queryPick = 'INSERT INTO tblUserPicks SET ';
-                if ($debug)
-                    print "<p> user Id insert 1: " . $pmkUserId;
-            }
+                           }
             $queryPick .= 'fldMoviePick = ? , fnkUserId = ? ';
-
+$dataPick [] = $pmkUserId;
             if ($update){
                 $queryPick .= 'WHERE fnkUserId = ?';
                 $dataPick [] = $pmkUserId;
-                $resultsPick = $thisDatabase->update($queryPick, $dataPick, 1, 0, 0, 0, false, false);
+//print "<p>SQL: " . $queryPick;
+//print "<p> Data: " ; print_r($dataPick); 
+                
+                $resultsPick = $thisDatabaseWriter->update($queryPick, $dataPick, 1, 0, 0, 0, false, false);
+            
+                //print"<p> Hi"; 
             }else{
                 $resultsPick = $thisDatabaseWriter->insert($queryPick, $dataPick); 
-                $pmkUserId = $thisDatabaseWriter -> lastInsert();
-                if ($debug)
-                    print "<p> user Id insert 2: " . $pmkUserId;
+              //  $pmkUserId = $thisDatabaseWriter -> lastInsert();
             }
+            
+             if ($debug){
+                    print "<p> user Id insert 1: " . $pmkUserId;
+             }
+
             $dataEntered = $thisDatabaseWriter->db->commit();
 
             if ($debug)
@@ -326,16 +331,16 @@ if ($dataEntered) {
         $query = "SELECT fldDateJoined FROM tblUserInfo WHERE pmkUserId=" . $primaryKey;
            
             $results = $thisDatabaseReader->select($query);
-            print "<p>1";
+           // print "<p>1";
             $dateSubmitted = $results[0]["fldDateJoined"];
-            print "<p>2";
+            //print "<p>2";
             $key1 = sha1($dateSubmitted);
             $key2 = $primaryKey;
             if ($debug)
                 print "<p>key 1: " . $key1;
             if ($debug)
                 print "<p>key 2: " . $key2;
-            print '<p> selct thing works</p>';
+            //print '<p> selct thing works</p>';
             //#################################################################
             //
             //Put forms information into a variable to print on the screen
@@ -367,7 +372,7 @@ if ($dataEntered) {
             $subject = "Confirm email for DigiPix";
             $mailed = sendMail($to, $cc, $bcc, $from, $subject, $messageA . $messageB . $messageC . $message);
         } //data entered  
-        print'<p>data mailed</p>';
+        //print'<p>data mailed</p>';
     } // end form is valid
 } // ends if form was submitted.
 if ($debug) {
@@ -375,6 +380,36 @@ if ($debug) {
     print "<p>Section 3</p>";
 }
   
+//#############################################################################
+//
+//        $message = '<h2>Here is the information you submitted:</h2>';
+//
+//        foreach ($_POST as $key => $value) {
+//            $message .= "<p>";
+//            $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
+//            foreach ($camelCase as $one) {
+//                $message .= $one . " ";
+//            }
+//            $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
+//        }
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+//
+// SECTION: 2g Mail to user
+//
+// Process for mailing a message which contains the forms data
+// the message was built in section 2f.
+//        $to = $email; // the person who filled out the form
+//        $cc = "";
+//        $bcc = "";
+//        $from = "MoviePix <contact@movies.com>";
+//
+//// subject of mail should make sense to your form
+//        $todaysDate = strftime("%x");
+//        $subject = "Learn more about MoviePix: " . $todaysDate;
+//
+//        $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
+//    } // end form is valid
+//} // ends if form was submitted.
 //#############################################################################
 //
 // SECTION 3 Display Form
@@ -441,9 +476,7 @@ if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked w
                 <legend><h2>User Information</h2></legend>
 
                 <input type="hidden" id="hidUserId" name="hidUserId"
-                       value="
-    <?php print $pmkUserId; ?>
-                       "
+                       value="<?php print $pmkUserId; ?>"
                        >
 
                 <label for="txtFirstName" class="required">First Name
@@ -581,8 +614,8 @@ if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked w
 ?>
                 </article>
 
+<div id="footer">
 <?php
 include "footer.php";
-if ($debug)
-    print "<p>END OF PROCESSING</p>";
 ?>
+ </div>
