@@ -52,7 +52,8 @@ $yourURL = $domain . $phpSelf;
 if (isset($_GET["id"])) {
     $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
 //1
-    $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fldAction, fldComedy, fldFrequency ';
+    $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, '
+            . 'fldAction, fldComedy, fldDrama, fldRomance, fldAdventure, fldFrequency ';
     $queryinfo .= 'FROM tblUserInfo '
             . 'WHERE pmkUserId = ?';
     $resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
@@ -67,6 +68,9 @@ if (isset($_GET["id"])) {
     $email = $resultsInfo[0]["fldEmail"];
     $action = $resultsInfo[0]["fldAction"];
     $comedy = $resultsInfo[0]["fldComedy"];
+    $drama = $resultsInfo[0]["fldDrama"];
+    $romance = $resultsInfo[0]["fldRomance"];
+    $adventure = $resultsInfo[0]["fldAdventure"];
 //2 see variables below
     $movie = $resultsPick[0]['lstTitle'];
 
@@ -144,8 +148,6 @@ if (isset($_POST["btnSubmit"])) {
     }
 //    $dataInfo[] = $pmkUserId;
 
-    print $pmkUserId;
-
     $firstName = htmlentities($_POST["txtFirstName"], ENT_QUOTES, "UTF-8");
     $dataInfo[] = $firstName;
 
@@ -173,25 +175,28 @@ if (isset($_POST["btnSubmit"])) {
     }
 
     if (isset($_POST["chkDrama"])) {
-        $chkDrama = 'Drama';
+        $drama = true;
     } else {
-        $chkDrama = '';
+        $drama = false;
     }
 
     if (isset($_POST["chkRomance"])) {
-        $chkRomance = 'Romance';
+        $romance = true ;
     } else {
-        $chkRomance = '';
+        $romance = false;
     }
 
     if (isset($_POST["chkAdventure"])) {
-        $chkAdventure = 'Adventure';
+        $adventure = true;
     } else {
-        $chkAdventure = '';
+        $adventure = false;
     }
 //4
     $dataInfo[] = $action;
     $dataInfo[] = $comedy;
+    $dataInfo[] = $drama;
+    $dataInfo[] = $romance;
+    $dataInfo[] = $adventure;
 
     $movie = htmlentities($_POST["lstTitle"], ENT_QUOTES, 'UTF-8');
     $dataPick[] = $movie;
@@ -267,7 +272,8 @@ if (isset($_POST["btnSubmit"])) {
             }
 //5
             $queryInfo .= 'fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
-                    . 'fldEmail = ?, fldAction = ?, fldComedy = ?, fldFrequency = ? ';
+                    . 'fldEmail = ?, fldAction = ?, fldComedy = ?, fldDrama = ?, '
+                    . 'fldRomance = ?, fldAdventure = ? , fldFrequency = ? ';
             if ($update) {
                 $queryInfo .= 'WHERE pmkUserId = ?';
                 $dataInfo[] = $pmkUserId;
