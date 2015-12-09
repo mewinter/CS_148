@@ -45,10 +45,14 @@ $yourURL = $domain . $phpSelf;
 //
 // Initialize variables one for each form element
 // in the order they appear on the form
+    $queryMovie = "SELECT pmkMovieId, lstTitle, fldStatus ";
+    $queryMovie .= "FROM tblMovies WHERE fldStatus = 'Upcoming' ORDER BY lstTitle";
+    $movies = $thisDatabaseReader->select($queryMovie, "", 1, 1, 2, 0, false, false);
+
 if (isset($_GET["id"])) {
     $pmkUserId = (int) htmlentities($_GET["id"], ENT_QUOTES, "UTF-8");
-
-    $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fnkGenre, fldFrequency ';
+//1
+    $queryinfo = 'SELECT fldFirstName, fldLastName, fldBirthDate, fldEmail, fldAction, fldComedy, fldFrequency ';
     $queryinfo .= 'FROM tblUserInfo '
             . 'WHERE pmkUserId = ?';
     $resultsInfo = $thisDatabaseWriter->select($queryinfo, array($pmkUserId), 1, 0, 0, 0, false, false);
@@ -56,17 +60,14 @@ if (isset($_GET["id"])) {
     $querypick = 'SELECT fldMoviePick, fnkUserId FROM tblUserPicks WHERE fnkUserId = ?';
     $resultsPick = $thisDatabaseWriter->select($querypick, array($pmkUserId), 1, 0, 0, 0, false, false);
 
-    $queryMovie = "SELECT pmkMovieId, lstTitle, fldStatus ";
-    $queryMovie .= "FROM tblMovies WHERE fldStatus = 'Upcoming' ORDER BY lstTitle";
-    $movies = $thisDatabaseReader->select($queryMovie, "", 1, 1, 2, 0, false, false);
-
     $pmkUserId = $resultsPick [0]['fnkUserId'];
     $firstName = $resultsInfo[0]["fldFirstName"];
     $lastName = $resultsInfo[0]["fldLastName"];
     $birthday = $resultsInfo[0]["fldBirthDate"];
     $email = $resultsInfo[0]["fldEmail"];
-    $genresList = $resultsInfo[0]["fnkGenre"];
-
+    $action = $resultsInfo[0]["fldAction"];
+    $comedy = $resultsInfo[0]["fldComedy"];
+//2 see variables below
     $movie = $resultsPick[0]['lstTitle'];
 
     $frequency = $resultsInfo[0]["fldFrequency"];
@@ -158,17 +159,17 @@ if (isset($_POST["btnSubmit"])) {
     $dataInfo[] = $email;
 
 //    $genres = filter_var($_POST["chkGenres"], ENT_QUOTES, 'UTF-8');
-
+//3
     if (isset($_POST["chkAction"])) {
-        $chkAction = 'Action';
+        $action = true;
     } else {
-        $chkAction = '';
+        $action = false;
     }
 
     if (isset($_POST["chkComedy"])) {
-        $chkComedy = 'Comedy';
+        $comedy = true;
     } else {
-        $chkComedy = '';
+        $comedy = false;
     }
 
     if (isset($_POST["chkDrama"])) {
@@ -188,23 +189,16 @@ if (isset($_POST["btnSubmit"])) {
     } else {
         $chkAdventure = '';
     }
-
-    $genres = $chkAction;
-    $genres .= $chkComedy;
-    $genres .= $chkDrama;
-    $genres .= $chkRomance;
-    $genres .= $chkAdventure;
-    if ($debug) {
-        print $genres;
-    }
-    $dataInfo[] = $genres;
+//4
+    $dataInfo[] = $action;
+    $dataInfo[] = $comedy;
 
     $movie = htmlentities($_POST["lstTitle"], ENT_QUOTES, 'UTF-8');
     $dataPick[] = $movie;
 
     $frequency = htmlentities($_POST["radFrequency"], ENT_QUOTES, 'UTF-8');
     $dataInfo[] = $frequency;
-    print '<p>test ' . $frequency;
+
 
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -267,22 +261,22 @@ if (isset($_POST["btnSubmit"])) {
                 $queryInfo = 'UPDATE tblUserInfo SET ';
             } else {
                 $queryInfo = 'INSERT INTO tblUserInfo SET ';
-
                 if ($debug) {
                     print "<p>pmk= " . $pmkUserId;
                 }
             }
-            $queryInfo .= 'pmkUserId = ?, fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
-                    . 'fldEmail = ?, fnkGenre = ?, fldFrequency = ?, WHERE pmkUserId = ? ';
+//5
+            $queryInfo .= 'fldFirstName = ?, fldLastName = ?, fldBirthDate = ?, '
+                    . 'fldEmail = ?, fldAction = ?, fldComedy = ?, fldFrequency = ? ';
             if ($update) {
                 $queryInfo .= 'WHERE pmkUserId = ?';
-//                $dataInfo[] = $pmkUserId;
+                $dataInfo[] = $pmkUserId;
                 $resultsInfo = $thisDatabaseWriter->update($queryInfo, $dataInfo, 1, 0, 0, 0, false, false);
             } else {
                 $resultsInfo = $thisDatabaseWriter->insert($queryInfo, $dataInfo);
                 $pmkUserId = $thisDatabaseWriter->lastInsert();
                 if ($debug) {
-                    print "<p>pmk= " . $primaryKey;
+                    print "<p>pmk= " . $pmkUserId;
                 }
             }
 
@@ -577,21 +571,21 @@ if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked w
                         <label for="radWeekly">
                             <input type="radio" 
                                    id="radWeekly" 
-                                   name="radFrequency" 
+                                   name="radFrequency"   <?php if ($frequency == 'Weekly') print ' checked '; ?>
                                    value="Weekly">Weekly
                         </label>
 
                         <label for="radMonthly">
                             <input type="radio" 
                                    id="radMonthly" 
-                                   name="radFrequency" 
+                                   name="radFrequency" <?php if ($frequency == 'Monthly') print ' checked '; ?>
                                    value="Monthly">Monthly
                         </label>
 
                         <label for="radNever">
                             <input type="radio" 
                                    id="radNever" 
-                                   name="radFrequency" 
+                                   name="radFrequency" <?php if ($frequency == 'Never') print ' checked '; ?>
                                    value="Never">Never
                         </label>
 
