@@ -10,7 +10,7 @@ include "top.php";
 ?>
 
 <div id="header">
-    <h1>Current Movie Schedule</h1>
+    <h1>Vote for the Next Movie Feature!</h1>
 </div>
 
 <?php
@@ -377,36 +377,6 @@ if ($debug) {
   
 //#############################################################################
 //
-//        $message = '<h2>Here is the information you submitted:</h2>';
-//
-//        foreach ($_POST as $key => $value) {
-//            $message .= "<p>";
-//            $camelCase = preg_split('/(?=[A-Z])/', substr($key, 3));
-//            foreach ($camelCase as $one) {
-//                $message .= $one . " ";
-//            }
-//            $message .= " : " . htmlentities($value, ENT_QUOTES, "UTF-8") . "</p>";
-//        }
-//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-//
-// SECTION: 2g Mail to user
-//
-// Process for mailing a message which contains the forms data
-// the message was built in section 2f.
-//        $to = $email; // the person who filled out the form
-//        $cc = "";
-//        $bcc = "";
-//        $from = "MoviePix <contact@movies.com>";
-//
-//// subject of mail should make sense to your form
-//        $todaysDate = strftime("%x");
-//        $subject = "Learn more about MoviePix: " . $todaysDate;
-//
-//        $mailed = sendMail($to, $cc, $bcc, $from, $subject, $message);
-//    } // end form is valid
-//} // ends if form was submitted.
-//#############################################################################
-//
 // SECTION 3 Display Form
 //
 ?>
@@ -546,7 +516,7 @@ if (isset($_POST["btnSubmit"]) AND empty($errorMsg)) { // closing of if marked w
                               id="chkAdventure" 
                               name="chkAdventure" 
                               value="Adventure"
-    <?php if ($Adventure) print ' checked '; ?>
+    <?php if ($adventure) print ' checked '; ?>
                               tabindex="220"> Adventure</label>
             </fieldset> <!-- ends wrapper Two -->
 
